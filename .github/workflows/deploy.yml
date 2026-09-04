@@ -1,0 +1,59 @@
+name: Build e Deploy
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: [README.md, LICENSE, .gitignore]
+  # Atualiza o site sozinho todo dia às 06:00 UTC (03:00 BRT):
+  # repositório novo, descrição alterada ou Page recém-publicada aparecem aqui.
+  schedule:
+    - cron: "0 6 * * *"
+  # Permite disparar manualmente na aba Actions...
+  workflow_dispatch:
+  # ...ou a partir de outro repositório:
+  #   gh api repos/TGF231/TGF231.github.io/dispatches -f event_type=refresh
+  repository_dispatch:
+    types: [refresh]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Gerar site
+        env:
+          # GH_PAT (secret opcional) libera os repositórios privados listados
+          # em site.config.json. Sem ele, o build usa só dados públicos.
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/build.mjs
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

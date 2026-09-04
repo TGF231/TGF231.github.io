@@ -1,0 +1,35 @@
+{
+  "user": "TGF231",
+  "name": "Thiago Gomes",
+  "role": "Analista de Dados e Programador",
+  "title": "Thiago Gomes",
+  "kicker": "Portfólio",
+  "description": "Transformo dados em decisões e construo as ferramentas que faltam — de SQL e Firebird a Python e C++. Os repositórios abaixo se atualizam sozinhos, direto do meu GitHub.",
+  "url": "https://tgf231.github.io",
+  "lang": "pt-BR",
+  "email": "tgf231.dev@gmail.com",
+  "about": {
+    "heading": "Dados e código, no mesmo lugar.",
+    "text": "Trabalho na fronteira entre análise de dados e desenvolvimento: escrevo consultas, automatizo relatórios e construo pequenas ferramentas que resolvem problemas reais. A maior parte do que faço vive em bancos de dados e em código — e este site mostra esse trabalho conforme ele acontece."
+  },
+  "contact": {
+    "heading": "Vamos conversar.",
+    "text": "Aberto a projetos, colaborações e boas conversas sobre dados e software."
+  },
+  "skills": ["Python", "SQL", "Firebird", "C++", "JavaScript", "VBA (Excel)"],
+  "repos": {
+    "exclude": ["TGF231.github.io", "Home-Page"],
+    "includeForks": false,
+    "includeArchived": true
+  },
+  "private": {
+    "comment": "Repositórios privados só aparecem se estiverem nesta lista E se o secret GH_PAT existir na Action. Nada é exposto por acidente.",
+    "allow": ["Backup_Maximus"],
+    "fields": ["name", "description", "language", "pagesUrl", "updatedAt"]
+  },
+  "profileReadme": {
+    "enabled": false,
+    "comment": "Ligue quando existir um README no repositório de perfil (TGF231/TGF231). O texto de 'about' acima é usado enquanto isso.",
+    "repo": "TGF231"
+  }
+}

@@ -1,54 +1,63 @@
-# Pacote de customização TGF231 para o Chirpy Starter
+# TGF231.github.io
 
-Estes arquivos são só as SUAS customizações — para colar por cima de um repositório
-criado a partir do **chirpy-starter** oficial (que já traz todo o resto funcionando).
+Site pessoal em HTML/CSS/JS puro — **sem Jekyll, sem framework, sem build tool**.
+Um script Node sem dependências busca os dados no GitHub, renderiza os templates e
+o GitHub Actions publica o resultado no Pages.
 
-## Por que recomeçar do starter?
+## Estrutura
 
-Instalar o Chirpy só pelo gem faz o Jekyll ler apenas parte do tema (`_includes`,
-`_layouts`, `_sass`, `assets`). A estrutura que dá o visual completo (`_data`,
-`_plugins`, assets compilados, favicons) não é carregada — por isso a montagem
-manual fica com metade do estilo. O starter já empacota tudo isso.
+```
+site.config.json        toda a configuração (usuário, textos, filtros, privados)
+templates/base.html     o esqueleto HTML de todas as páginas
+assets/css/style.css    o visual inteiro — trocar tema = trocar as variáveis do :root
+assets/js/app.js        filtro da grade de repositórios
+content/posts/*.md      notas (Markdown com front matter)
+scripts/build.mjs       o build: dados + templates -> dist/
+scripts/github.mjs      coleta na API do GitHub
+scripts/markdown.mjs    renderizador Markdown mínimo
+data/repos.json         último snapshot dos repositórios (fallback se a API falhar)
+dist/                   saída do build (não versionada)
+```
 
-## Passo 1 — Criar o repositório a partir do starter
+## Como o site se atualiza sozinho
 
-1. Acesse https://github.com/cotes2020/chirpy-starter
-2. Clique em **Use this template → Create a new repository**.
-3. Nomeie o repositório como `TGF231.github.io` (tudo minúsculo no username).
-4. Em **Settings → Pages**, deixe o Source em **GitHub Actions**.
+O workflow `.github/workflows/deploy.yml` roda o build:
 
-## Passo 2 — Substituir o _config.yml
+- a cada push na `main`;
+- **todo dia às 06:00 UTC** (`schedule`) — é isso que faz repositório novo,
+  descrição alterada ou Page recém-publicada aparecerem sem você fazer nada;
+- manualmente pela aba **Actions**;
+- por `repository_dispatch`, se você quiser que outro repositório dispare
+  um rebuild ao publicar a própria Page:
 
-Este pacote já traz um `_config.yml` COMPLETO, baseado no arquivo oficial do
-Chirpy (todos os blocos obrigatórios: analytics, pageviews, pwa, kramdown, sass,
-collections, defaults, jekyll-archives etc.), com os seus valores já preenchidos:
-título, tagline curto, url, avatar (seu próprio avatar do GitHub), idioma pt-BR
-e timezone.
+```bash
+gh api repos/TGF231/TGF231.github.io/dispatches -f event_type=refresh
+```
 
-Basta substituir o `_config.yml` que veio do starter por este.
+## Configuração inicial (uma vez)
 
-Se quiser, revise depois o `email:` em `social:` e o `twitter.username`
-(deixei os placeholders). Não são obrigatórios pro site funcionar.
+1. **Settings → Pages → Source: GitHub Actions.**
+2. Opcional, para incluir repositórios **privados**: crie um Personal Access Token
+   (fine-grained, permissão *Repository → Metadata: read-only* nos repos desejados)
+   e salve em **Settings → Secrets and variables → Actions** como `GH_PAT`.
+   Sem esse secret o build simplesmente ignora os privados.
 
-## Passo 3 — Colar os arquivos deste pacote
+## Privacidade dos repositórios privados
 
-Copie para o repositório, nos mesmos caminhos:
+Repositório privado **nunca** entra por acidente. Ele só aparece se:
 
-- `_tabs/projects.md`            → cria a aba "Projetos"
-- `_includes/repo-ledger.html`   → a listagem automática de repositórios
-- `assets/css/jekyll-theme-chirpy.scss` → estilos da listagem + ajuste da sidebar
+- o nome estiver em `private.allow` no `site.config.json`, **e**
+- o secret `GH_PAT` existir na Action.
 
-O starter já tem `_tabs/about.md`; edite o texto dele se quiser.
+E mesmo assim, só os campos listados em `private.fields` são publicados —
+o resto (URL do código, estrelas, tópicos) é descartado no build.
 
-## Passo 4 — Publicar
+## Rodar localmente
 
-Faça commit/push. A Action do starter builda e publica sozinha.
-Acompanhe em **Actions**; quando ficar verde, o site estará no ar com o visual
-completo do Chirpy.
+Precisa de Node 20+:
 
-## Manutenção
+```bash
+node scripts/build.mjs && npx serve dist
+```
 
-- **Adicionar repositório privado com Pages:** edite `TGF_MANUAL_ENTRIES` em
-  `_includes/repo-ledger.html`.
-- **Ocultar um repositório:** adicione o nome em `TGF_EXCLUDE` no mesmo arquivo.
-- **Novo post:** crie `_posts/AAAA-MM-DD-titulo.md` com o front matter padrão do Chirpy.
+Sem token, o build usa apenas os dados públicos — suficiente para conferir o layout.
