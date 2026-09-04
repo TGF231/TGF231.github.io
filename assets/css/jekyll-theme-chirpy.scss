@@ -1,0 +1,106 @@
+---
+---
+
+@import 'main';
+
+/* ==== customizações TGF231 ==== */
+
+/* tagline da sidebar quebrando corretamente em vez de estourar a largura */
+#sidebar .site-subtitle {
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word;
+  hyphens: auto;
+  max-width: 100%;
+}
+
+/* ---- listagem de repositórios (repo-ledger.html) ---- */
+
+.tgf-ledger-wrap {
+  margin-top: 1.5em;
+}
+
+.tgf-section-head {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.75em;
+}
+
+.tgf-meta {
+  font-family: Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75em;
+  opacity: 0.65;
+}
+
+.tgf-ledger {
+  border-top: 1px solid rgba(125, 125, 125, 0.3);
+}
+
+.tgf-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.25em 1.25em;
+  align-items: start;
+  padding: 1em 0;
+  border-bottom: 1px solid rgba(125, 125, 125, 0.3);
+}
+
+.tgf-name {
+  font-family: Menlo, Monaco, Consolas, monospace;
+  font-size: 0.95em;
+  font-weight: 600;
+}
+
+.tgf-name a {
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.tgf-name a:hover {
+  border-bottom-color: currentColor;
+}
+
+.tgf-desc {
+  grid-column: 1 / -1;
+  font-size: 0.85em;
+  opacity: 0.75;
+  max-width: 64ch;
+}
+
+.tgf-lang {
+  font-family: Menlo, Monaco, Consolas, monospace;
+  font-size: 0.7em;
+  opacity: 0.65;
+  align-self: center;
+}
+
+.tgf-status {
+  font-family: Menlo, Monaco, Consolas, monospace;
+  font-size: 0.7em;
+  align-self: center;
+  padding: 0.15em 0.5em;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+
+.tgf-status.tgf-live {
+  color: #e3a23d;
+}
+
+.tgf-status.tgf-private {
+  opacity: 0.65;
+}
+
+.tgf-empty,
+.tgf-error {
+  font-family: Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8em;
+  opacity: 0.65;
+  padding: 1.5em 0;
+}
+
+@media (max-width: 520px) {
+  .tgf-row {
+    grid-template-columns: 1fr;
+  }
+}

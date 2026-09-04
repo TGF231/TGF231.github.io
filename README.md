@@ -1,39 +1,73 @@
-# Chirpy Starter
+# Pacote de customização TGF231 para o Chirpy Starter
 
-[![Gem Version](https://img.shields.io/gem/v/jekyll-theme-chirpy)][gem]&nbsp;
-[![GitHub license](https://img.shields.io/github/license/cotes2020/chirpy-starter.svg?color=blue)][mit]
+Estes arquivos são só as SUAS customizações — para colar por cima de um repositório
+criado a partir do **chirpy-starter** oficial (que já traz todo o resto funcionando).
 
-A minimal, ready-to-use template for creating a blog with the [**Chirpy**][chirpy] Jekyll theme. Get up and running in minutes with all critical files pre-configured.
+## Por que recomeçar do starter?
 
-## Why This Starter Exists
+Instalar o Chirpy só pelo gem faz o Jekyll ler apenas parte do tema (`_includes`,
+`_layouts`, `_sass`, `assets`). A estrutura que dá o visual completo (`_data`,
+`_plugins`, assets compilados, favicons) não é carregada — por isso a montagem
+manual fica com metade do estilo. O starter já empacota tudo isso.
 
-When installing Chirpy through [RubyGems.org][gem], Jekyll can only read a subset of theme files (`_data`, `_layouts`, `_includes`, `_sass`, `assets`) and limited `_config.yml` options from the gem. As a result, users cannot enjoy the full out-of-the-box experience that Chirpy offers.
+## Passo 1 — Criar o repositório a partir do starter
 
-To unlock all features, the following files must be present in your Jekyll site:
+1. Acesse https://github.com/cotes2020/chirpy-starter
+2. Clique em **Use this template → Create a new repository**.
+3. Nomeie o repositório como `TGF231.github.io` (tudo minúsculo no username).
+4. Em **Settings → Pages**, deixe o Source em **GitHub Actions**.
 
-```shell
-.
-├── _config.yml
-├── _plugins
-├── _tabs
-└── index.html
+## Passo 2 — Ajustar o _config.yml (que já veio no starter)
+
+Edite os valores abaixo no `_config.yml` do novo repositório:
+
+```yaml
+lang: pt-BR
+timezone: America/Sao_Paulo
+
+title: TGF231
+tagline: Automações e dados        # curto de propósito, pra caber na sidebar
+description: >-
+  Automações e ferramentas de dados — Python, SQL e integrações para sistemas legados.
+
+url: "https://TGF231.github.io"
+
+github:
+  username: TGF231
+
+social:
+  name: TGF231
+  links:
+    - https://github.com/TGF231
+
+# foto de perfil: usa seu próprio avatar do GitHub (URL sempre válida)
+avatar: https://github.com/TGF231.png
+
+theme_mode: dark
 ```
 
-This starter bundles those files from the latest **Chirpy** release along with a [CD][CD] workflow, so you can start writing immediately.
+Não mexa nas seções de `collections`, `defaults`, `plugins` etc. — o starter
+já traz tudo configurado corretamente.
 
-## Usage
+## Passo 3 — Colar os arquivos deste pacote
 
-Check out the [theme's docs](https://github.com/cotes2020/jekyll-theme-chirpy/wiki).
+Copie para o repositório, nos mesmos caminhos:
 
-## Contributing
+- `_tabs/projects.md`            → cria a aba "Projetos"
+- `_includes/repo-ledger.html`   → a listagem automática de repositórios
+- `assets/css/jekyll-theme-chirpy.scss` → estilos da listagem + ajuste da sidebar
 
-This repository is automatically updated with new releases from the theme repository. If you encounter any issues or want to contribute to its improvement, please visit the [theme repository][chirpy] to provide feedback.
+O starter já tem `_tabs/about.md`; edite o texto dele se quiser.
 
-## License
+## Passo 4 — Publicar
 
-This work is published under [MIT][mit] License.
+Faça commit/push. A Action do starter builda e publica sozinha.
+Acompanhe em **Actions**; quando ficar verde, o site estará no ar com o visual
+completo do Chirpy.
 
-[gem]: https://rubygems.org/gems/jekyll-theme-chirpy
-[chirpy]: https://github.com/cotes2020/jekyll-theme-chirpy/
-[CD]: https://en.wikipedia.org/wiki/Continuous_deployment
-[mit]: https://github.com/cotes2020/chirpy-starter/blob/master/LICENSE
+## Manutenção
+
+- **Adicionar repositório privado com Pages:** edite `TGF_MANUAL_ENTRIES` em
+  `_includes/repo-ledger.html`.
+- **Ocultar um repositório:** adicione o nome em `TGF_EXCLUDE` no mesmo arquivo.
+- **Novo post:** crie `_posts/AAAA-MM-DD-titulo.md` com o front matter padrão do Chirpy.
