@@ -12,6 +12,7 @@ templates/base.html     o esqueleto HTML de todas as páginas
 assets/css/style.css    o visual inteiro — trocar tema = trocar as variáveis do :root
 assets/js/app.js        filtro da grade de repositórios
 content/posts/*.md      notas (Markdown com front matter)
+static/                 arquivos copiados crus para a raiz do site (sw.js)
 scripts/build.mjs       o build: dados + templates -> dist/
 scripts/github.mjs      coleta na API do GitHub
 scripts/markdown.mjs    renderizador Markdown mínimo

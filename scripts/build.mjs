@@ -375,6 +375,13 @@ ${contactSection}
   // ---------------- assets, dados e metadados ----------------
   await copyDir(p("assets"), path.join(OUT, "assets"));
 
+  // static/ vai para a raiz do site, sem processamento (sw.js, CNAME, etc).
+  try {
+    await copyDir(p("static"), OUT);
+  } catch (err) {
+    if (err.code !== "ENOENT") throw err;
+  }
+
   const payload = { generatedAt: new Date().toISOString(), user: config.user, repos };
   await write("data/repos.json", JSON.stringify(payload, null, 2));
   await fs.mkdir(p("data"), { recursive: true });
