@@ -17,37 +17,18 @@ manual fica com metade do estilo. O starter já empacota tudo isso.
 3. Nomeie o repositório como `TGF231.github.io` (tudo minúsculo no username).
 4. Em **Settings → Pages**, deixe o Source em **GitHub Actions**.
 
-## Passo 2 — Ajustar o _config.yml (que já veio no starter)
+## Passo 2 — Substituir o _config.yml
 
-Edite os valores abaixo no `_config.yml` do novo repositório:
+Este pacote já traz um `_config.yml` COMPLETO, baseado no arquivo oficial do
+Chirpy (todos os blocos obrigatórios: analytics, pageviews, pwa, kramdown, sass,
+collections, defaults, jekyll-archives etc.), com os seus valores já preenchidos:
+título, tagline curto, url, avatar (seu próprio avatar do GitHub), idioma pt-BR
+e timezone.
 
-```yaml
-lang: pt-BR
-timezone: America/Sao_Paulo
+Basta substituir o `_config.yml` que veio do starter por este.
 
-title: TGF231
-tagline: Automações e dados        # curto de propósito, pra caber na sidebar
-description: >-
-  Automações e ferramentas de dados — Python, SQL e integrações para sistemas legados.
-
-url: "https://TGF231.github.io"
-
-github:
-  username: TGF231
-
-social:
-  name: TGF231
-  links:
-    - https://github.com/TGF231
-
-# foto de perfil: usa seu próprio avatar do GitHub (URL sempre válida)
-avatar: https://github.com/TGF231.png
-
-theme_mode: dark
-```
-
-Não mexa nas seções de `collections`, `defaults`, `plugins` etc. — o starter
-já traz tudo configurado corretamente.
+Se quiser, revise depois o `email:` em `social:` e o `twitter.username`
+(deixei os placeholders). Não são obrigatórios pro site funcionar.
 
 ## Passo 3 — Colar os arquivos deste pacote
 
