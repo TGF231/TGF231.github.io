@@ -383,9 +383,27 @@ ${contactSection}
   }
 
   const payload = { generatedAt: new Date().toISOString(), user: config.user, repos };
+
+  // A cópia publicada leva sempre o carimbo de tempo do build.
   await write("data/repos.json", JSON.stringify(payload, null, 2));
-  await fs.mkdir(p("data"), { recursive: true });
-  await fs.writeFile(p("data", "repos.json"), JSON.stringify(payload, null, 2), "utf8");
+
+  // Já o snapshot versionado (fallback caso a API do GitHub falhe) só é
+  // reescrito quando a lista de repositórios muda de verdade. Reescrevê-lo a
+  // cada build só para atualizar `generatedAt` sujaria o working tree sem
+  // nenhuma diferença de conteúdo.
+  const snapshot = p("data", "repos.json");
+  let anterior = null;
+  try {
+    anterior = JSON.parse(await fs.readFile(snapshot, "utf8"));
+  } catch {
+    // Sem snapshot ainda — será criado abaixo.
+  }
+  const mudou = !anterior || JSON.stringify(anterior.repos) !== JSON.stringify(repos);
+  if (mudou) {
+    await fs.mkdir(p("data"), { recursive: true });
+    await fs.writeFile(snapshot, JSON.stringify(payload, null, 2), "utf8");
+    console.log("snapshot data/repos.json atualizado (a lista de repositórios mudou)");
+  }
   await write(".nojekyll", "");
 
   const urls = ["/", ...(posts.length ? ["/notas/", ...posts.map((post) => `/notas/${post.slug}/`)] : [])];

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-05T12:25:06.299Z",
+  "generatedAt": "2026-09-05T14:46:13.545Z",
   "user": "TGF231",
   "repos": [
     {
@@ -15,8 +15,8 @@
       "createdAt": "2026-09-04T19:31:22Z",
       "url": "https://github.com/TGF231/TGF231",
       "homepage": null,
-      "hasPages": false,
-      "pagesUrl": null,
+      "hasPages": true,
+      "pagesUrl": "https://tgf231.github.io/TGF231/",
       "visibility": "public"
     },
     {
