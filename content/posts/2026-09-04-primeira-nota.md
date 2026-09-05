@@ -1,7 +1,7 @@
 ---
 title: Como este site é montado
 date: 2026-09-04
-summary: Um build em Node puro que lê a API do GitHub e cospe HTML estático.
+summary: Um build em Node puro que lê a API do GitHub e entrega HTML estático.
 tags: [meta, github-actions]
 ---
 
