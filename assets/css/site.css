@@ -1,5 +1,6 @@
-/* Visual em vidro, tema escuro e claro. A cor principal é #7D0E0E (--cor): preenche a
-   ação principal, os pontos e os brilhos. Todos os valores ficam nas variáveis abaixo. */
+/* Base no Atlassian Design System (atlassian.design): neutros cinza, superfícies chapadas,
+   elevação discreta e cantos da escala do Atlassian. A cor principal é #7D0E0E (--cor):
+   preenche a ação principal, os pontos e os brilhos. Todos os valores ficam nas variáveis. */
 
 :root {
   --cor: #7d0e0e;
@@ -7,20 +8,17 @@
   --cor-brilho: rgba(125, 14, 14, 0.55);
   --cor-texto: #ec6b69;            /* a cor principal clareada, legível sobre o escuro */
 
-  --fundo: #07070a;
-  --texto: #f4f3f0;
-  --texto-2: rgba(244, 243, 240, 0.68);
-  --texto-3: rgba(244, 243, 240, 0.42);
-  --vidro: rgba(255, 255, 255, 0.045);
-  --vidro-topo: rgba(12, 12, 16, 0.55);
-  --borda: rgba(255, 255, 255, 0.1);
-  --borda-forte: rgba(255, 255, 255, 0.18);
-  --sombra: 0 30px 60px -30px rgba(0, 0, 0, 0.95);
-  --sombra-pilula: 0 10px 30px -12px rgba(0, 0, 0, 0.7);
-  --brilho-interno: inset 0 1px 0 rgba(255, 255, 255, 0.07);
-  --mancha-1: rgba(125, 14, 14, 0.55);
-  --mancha-2: rgba(88, 40, 160, 0.28);
-  --mancha-3: rgba(214, 96, 40, 0.18);
+  --fundo: #1f1f21;
+  --texto: #cecfd2;
+  --texto-2: #a9abaf;
+  --texto-3: #96999e;
+  --superficie: #242528;
+  --superficie-topo: #2b2c2f;
+  --borda: #37383b;
+  --borda-forte: #4b4d52;
+  --sombra: 0 0 0 1px #bdbdbd1f, 0 8px 12px #0104045c, 0 0 1px 1px #01040480;   /* shadow.overlay */
+  --sombra-pilula: 0 1px 1px #01040480, 0 0 1px #01040480;                      /* shadow.raised */
+  --elevacao: 0 1px 1px #01040480, 0 0 1px #01040480;
 
   /* painel invertido (claro no tema escuro), para alternar o ritmo das etapas */
   --inv-fundo: #f2efe9;
@@ -28,13 +26,11 @@
   --inv-texto-2: rgba(20, 20, 22, 0.68);
   --inv-texto-3: rgba(20, 20, 22, 0.45);
   --inv-borda: rgba(20, 20, 22, 0.1);
-  --inv-vidro: rgba(20, 20, 22, 0.04);
+  --inv-superficie: #e9e5de;
   --inv-cor-texto: #7d0e0e;
 
-  --raio: 22px;
-  --raio-grande: 32px;
-  --blur: blur(16px) saturate(1.2);
-  --blur-topo: blur(14px) saturate(1.2);
+  --raio: 12px;          /* radius.xlarge */
+  --raio-grande: 12px;
   --fonte: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --fonte-titulo: "Inter Tight", "Inter", system-ui, sans-serif;
   --fonte-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
@@ -43,55 +39,49 @@
   color-scheme: dark;
 }
 
-/* Tema claro: papel quente, vidro leitoso, o painel invertido fica escuro. */
+/* Tema claro: fundo cinza bem claro, cartões brancos, o painel invertido fica escuro. */
 [data-theme="claro"] {
   --cor-texto: #7d0e0e;
-  --fundo: #f5f2ed;
-  --texto: #121214;
-  --texto-2: rgba(18, 18, 20, 0.68);
-  --texto-3: rgba(18, 18, 20, 0.46);
-  --vidro: rgba(255, 255, 255, 0.55);
-  --vidro-topo: rgba(255, 255, 255, 0.62);
-  --borda: rgba(18, 18, 20, 0.08);
-  --borda-forte: rgba(18, 18, 20, 0.16);
-  --sombra: 0 30px 60px -32px rgba(80, 30, 20, 0.28);
-  --sombra-pilula: 0 10px 30px -14px rgba(80, 30, 20, 0.3);
-  --brilho-interno: inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  --mancha-1: rgba(125, 14, 14, 0.22);
-  --mancha-2: rgba(120, 90, 220, 0.18);
-  --mancha-3: rgba(245, 150, 90, 0.26);
+  --fundo: #f8f8f8;
+  --texto: #292a2e;
+  --texto-2: #505258;
+  --texto-3: #6b6e76;
+  --superficie: #ffffff;
+  --superficie-topo: #ffffff;
+  --borda: #dddee1;
+  --borda-forte: #b7b9be;
+  --sombra: 0 8px 12px #1e1f2126, 0 0 1px #1e1f214f;
+  --sombra-pilula: 0 1px 1px #1e1f2140, 0 0 1px #1e1f214f;
+  --elevacao: 0 1px 1px #1e1f2140, 0 0 1px #1e1f214f;
   --inv-fundo: #141416;
   --inv-texto: #f4f3f0;
   --inv-texto-2: rgba(244, 243, 240, 0.7);
   --inv-texto-3: rgba(244, 243, 240, 0.45);
   --inv-borda: rgba(255, 255, 255, 0.1);
-  --inv-vidro: rgba(255, 255, 255, 0.05);
+  --inv-superficie: #1d1d21;
   --inv-cor-texto: #ec6b69;
   color-scheme: light;
 }
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
     --cor-texto: #7d0e0e;
-    --fundo: #f5f2ed;
-    --texto: #121214;
-    --texto-2: rgba(18, 18, 20, 0.68);
-    --texto-3: rgba(18, 18, 20, 0.46);
-    --vidro: rgba(255, 255, 255, 0.55);
-    --vidro-topo: rgba(255, 255, 255, 0.62);
-    --borda: rgba(18, 18, 20, 0.08);
-    --borda-forte: rgba(18, 18, 20, 0.16);
-    --sombra: 0 30px 60px -32px rgba(80, 30, 20, 0.28);
-    --sombra-pilula: 0 10px 30px -14px rgba(80, 30, 20, 0.3);
-    --brilho-interno: inset 0 1px 0 rgba(255, 255, 255, 0.85);
-    --mancha-1: rgba(125, 14, 14, 0.22);
-    --mancha-2: rgba(120, 90, 220, 0.18);
-    --mancha-3: rgba(245, 150, 90, 0.26);
+    --fundo: #f8f8f8;
+    --texto: #292a2e;
+    --texto-2: #505258;
+    --texto-3: #6b6e76;
+    --superficie: #ffffff;
+    --superficie-topo: #ffffff;
+    --borda: #dddee1;
+    --borda-forte: #b7b9be;
+    --sombra: 0 8px 12px #1e1f2126, 0 0 1px #1e1f214f;
+    --sombra-pilula: 0 1px 1px #1e1f2140, 0 0 1px #1e1f214f;
+    --elevacao: 0 1px 1px #1e1f2140, 0 0 1px #1e1f214f;
     --inv-fundo: #141416;
     --inv-texto: #f4f3f0;
     --inv-texto-2: rgba(244, 243, 240, 0.7);
     --inv-texto-3: rgba(244, 243, 240, 0.45);
     --inv-borda: rgba(255, 255, 255, 0.1);
-    --inv-vidro: rgba(255, 255, 255, 0.05);
+    --inv-superficie: #1d1d21;
     --inv-cor-texto: #ec6b69;
     color-scheme: light;
   }
@@ -115,19 +105,12 @@ p a:hover, li a:hover, .prose a:hover { text-decoration-color: var(--cor-texto);
 .pular { position: absolute; left: 16px; top: -100px; z-index: 50; padding: 8px 14px; border-radius: 999px; background: var(--cor); color: #fff; }
 .pular:focus { top: 16px; }
 
-/* Fundo em malha */
-.fundo { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-.mancha { position: absolute; border-radius: 50%; filter: blur(90px); }
-.mancha--1 { width: 60vmax; height: 60vmax; left: -18vmax; top: -22vmax; background: radial-gradient(circle, var(--mancha-1), transparent 65%); }
-.mancha--2 { width: 55vmax; height: 55vmax; right: -20vmax; top: 20vh; background: radial-gradient(circle, var(--mancha-2), transparent 65%); }
-.mancha--3 { width: 50vmax; height: 50vmax; left: 20vw; bottom: -30vmax; background: radial-gradient(circle, var(--mancha-3), transparent 65%); }
-
-/* ---------- Vidro e pílulas ---------- */
+ 
+/* ---------- Pílulas ---------- */
 .pilula {
   display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px;
-  border-radius: 999px; border: 1px solid var(--borda); background: var(--vidro-topo);
-  -webkit-backdrop-filter: var(--blur-topo); backdrop-filter: var(--blur-topo);
-  box-shadow: var(--sombra-pilula), var(--brilho-interno);
+  border-radius: 999px; border: 1px solid var(--borda); background: var(--superficie-topo);
+  box-shadow: var(--sombra-pilula), var(--elevacao);
   color: var(--texto); font: 600 11px/1 var(--fonte); letter-spacing: 0.14em; text-transform: uppercase;
   cursor: pointer; transition: border-color var(--mov), transform var(--mov);
 }
@@ -160,25 +143,23 @@ p a:hover, li a:hover, .prose a:hover { text-decoration-color: var(--cor-texto);
 .etapas-menu { position: relative; }
 .menu {
   position: absolute; right: 0; top: calc(100% + 10px); min-width: 240px; padding: 8px;
-  border-radius: 18px; border: 1px solid var(--borda); background: var(--vidro-topo);
-  -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
-  box-shadow: var(--sombra), var(--brilho-interno);
+  border-radius: var(--raio); border: 1px solid var(--borda); background: var(--superficie-topo);
+  box-shadow: var(--sombra), var(--elevacao);
 }
 .menu[hidden] { display: none; }
 .menu__item {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   padding: 10px 12px; border-radius: 12px; font-size: 14px; font-weight: 500;
 }
-.menu__item:hover { background: var(--vidro); }
+.menu__item:hover { background: var(--superficie); }
 .menu__num { font-size: 11px; color: var(--texto-3); }
 .menu__sep { height: 1px; margin: 6px 8px; background: var(--borda); }
 
 /* ---------- Botões ---------- */
 .botao {
   display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 22px;
-  border-radius: 999px; border: 1px solid var(--borda); background: var(--vidro);
-  -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
-  box-shadow: var(--brilho-interno);
+  border-radius: 999px; border: 1px solid var(--borda); background: var(--superficie);
+  box-shadow: var(--elevacao);
   color: var(--texto); font: 600 15px/1 var(--fonte); cursor: pointer;
   transition: transform var(--mov), border-color var(--mov), background var(--mov), box-shadow var(--mov);
 }
@@ -199,21 +180,20 @@ main { display: block; }
 .etapa__corpo {
   width: 100%; max-width: var(--largura); display: flex; flex-direction: column; align-items: flex-start; gap: 20px;
   padding: clamp(28px, 5vw, 72px); border-radius: var(--raio-grande);
-  border: 1px solid var(--borda); background: var(--vidro);
-  -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
-  box-shadow: var(--sombra), var(--brilho-interno);
+  border: 1px solid var(--borda); background: var(--superficie);
+  box-shadow: var(--sombra), var(--elevacao);
 }
-/* Ritmo: uma etapa em vidro, a seguinte em painel invertido (claro no escuro, escuro no claro). */
+/* Ritmo: uma etapa na superfície, a seguinte em painel invertido (claro no escuro, escuro no claro). */
 .etapa:not(.etapa--heroi):nth-of-type(odd) .etapa__corpo {
   --texto: var(--inv-texto); --texto-2: var(--inv-texto-2); --texto-3: var(--inv-texto-3);
-  --borda: var(--inv-borda); --vidro: var(--inv-vidro); --cor-texto: var(--inv-cor-texto);
+  --borda: var(--inv-borda); --superficie: var(--inv-superficie); --cor-texto: var(--inv-cor-texto);
   background: var(--inv-fundo); color: var(--texto); border-color: var(--inv-borda);
 }
 .etapa--livre { place-items: start center; }
 
 .chip {
   display: inline-flex; align-items: center; gap: 10px; margin: 0; padding: 8px 14px;
-  border-radius: 999px; border: 1px solid var(--borda); background: var(--vidro);
+  border-radius: 999px; border: 1px solid var(--borda); background: var(--superficie);
   color: var(--texto-2); font: 600 11px/1 var(--fonte); letter-spacing: 0.16em; text-transform: uppercase;
 }
 .chip::before { content: ""; width: 7px; height: 7px; border-radius: 2px; background: var(--cor); }
@@ -231,7 +211,7 @@ main { display: block; }
 /* Herói: sem painel, nome enorme, faixa de linguagens correndo embaixo. */
 .etapa--heroi { padding-top: 120px; overflow: hidden; }
 .etapa--heroi .etapa__corpo {
-  background: none; border: 0; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
+  background: none; border: 0; box-shadow: none;
   align-items: center; text-align: center; padding: 0;
 }
 .etapa--heroi .etapa__texto { margin: 0 auto; }
@@ -259,12 +239,11 @@ main { display: block; }
 }
 .bloco {
   position: relative; display: flex; flex-direction: column; gap: 14px; min-width: 0; min-height: 210px;
-  padding: 22px; border-radius: var(--raio); border: 1px solid var(--borda); background: var(--vidro);
-  -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
-  box-shadow: var(--brilho-interno); color: var(--texto);
+  padding: 22px; border-radius: var(--raio); border: 1px solid var(--borda); background: var(--superficie);
+  box-shadow: var(--elevacao); color: var(--texto);
   transition: transform var(--mov), border-color var(--mov), box-shadow var(--mov);
 }
-a.bloco:hover { transform: translateY(-4px); border-color: var(--borda-forte); box-shadow: var(--sombra), var(--brilho-interno), 0 0 0 1px var(--cor-brilho); }
+a.bloco:hover { transform: translateY(-4px); border-color: var(--borda-forte); box-shadow: var(--sombra), var(--elevacao), 0 0 0 1px var(--cor-brilho); }
 .bloco__num { font: 500 12px/1 var(--fonte-mono); color: var(--cor-texto); }
 .bloco__nome { margin: 0; font: 700 23px/1.15 var(--fonte-titulo); letter-spacing: -0.03em; }
 .bloco__texto { flex: 1 1 auto; color: var(--texto-2); font-size: 15px; }
@@ -283,13 +262,13 @@ a.bloco:hover { transform: translateY(-4px); border-color: var(--borda-forte); b
 
 /* Sobre e notas */
 .etiquetas { display: flex; flex-wrap: wrap; gap: 8px; }
-.etiqueta { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--borda); background: var(--vidro); font-size: 14px; font-weight: 500; }
+.etiqueta { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--borda); background: var(--superficie); font-size: 14px; font-weight: 500; }
 .lista-notas { list-style: none; margin: 0; padding: 0; align-self: stretch; }
 .lista-notas li { display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--borda); }
 .lista-notas .mono { color: var(--texto-3); font-size: 13px; white-space: nowrap; }
 .prose { max-width: 760px; }
 .prose h2, .prose h3 { font-family: var(--fonte-titulo); letter-spacing: -0.03em; margin: 32px 0 8px; }
-.prose pre { overflow: auto; padding: 16px; border-radius: 14px; border: 1px solid var(--borda); background: var(--vidro); }
+.prose pre { overflow: auto; padding: 16px; border-radius: 8px; border: 1px solid var(--borda); background: var(--superficie); }
 
 /* Rodapé */
 .rodape {
@@ -315,12 +294,11 @@ body.hub { height: 100vh; height: 100svh; display: flex; flex-direction: column;
 
 .cartao {
   position: relative; display: flex; flex-direction: column; gap: 8px; min-width: 0; min-height: 0; overflow: hidden;
-  padding: clamp(16px, 2vw, 24px); border-radius: var(--raio); border: 1px solid var(--borda); background: var(--vidro);
-  -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
-  box-shadow: var(--brilho-interno);
+  padding: clamp(16px, 2vw, 24px); border-radius: var(--raio); border: 1px solid var(--borda); background: var(--superficie);
+  box-shadow: var(--elevacao);
   transition: transform var(--mov), border-color var(--mov), box-shadow var(--mov);
 }
-.cartao:has(.cartao__alvo:hover) { transform: translateY(-3px); border-color: var(--borda-forte); box-shadow: var(--sombra), var(--brilho-interno), 0 0 0 1px var(--cor-brilho); }
+.cartao:has(.cartao__alvo:hover) { transform: translateY(-3px); border-color: var(--borda-forte); box-shadow: var(--sombra), var(--elevacao), 0 0 0 1px var(--cor-brilho); }
 .cartao__alvo { position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
 .cartao__alvo:focus-visible { outline: 2px solid var(--cor-texto); outline-offset: 2px; }
 .cartao__num { font-size: 12px; color: var(--cor-texto); }
@@ -337,7 +315,7 @@ body.hub { height: 100vh; height: 100svh; display: flex; flex-direction: column;
 
 /* Destaque: o primeiro projeto ocupa duas colunas e duas linhas, com o brilho da cor principal. */
 .cartao--destaque { grid-column: span 2; grid-row: span 2; justify-content: flex-end; border-color: var(--borda-forte);
-  background: linear-gradient(150deg, var(--cor-brilho), transparent 60%), var(--vidro); }
+  background: linear-gradient(150deg, var(--cor-brilho), transparent 60%), var(--superficie); }
 .cartao--destaque .cartao__nome { font-size: clamp(30px, 3.6vw, 52px); letter-spacing: -0.05em; }
 .cartao--destaque .cartao__texto { -webkit-line-clamp: 4; font-size: clamp(14px, 1.2vw, 17px); }
 .cartao--destaque .cartao__acao { color: var(--texto); }
@@ -381,7 +359,7 @@ body.hub { height: 100vh; height: 100svh; display: flex; flex-direction: column;
   .pilula { height: 36px; padding: 0 12px; }
   .pilula--icone { width: 36px; padding: 0; }
   .etapa { padding: 88px 12px 96px; }
-  .etapa__corpo { border-radius: 26px; }
+  .etapa__corpo { border-radius: var(--raio-grande); }
   .blocos, .blocos--downloads { grid-template-columns: 1fr; }
   .acao { left: 16px; right: 16px; bottom: 16px; justify-content: center; }
 }
@@ -392,7 +370,3 @@ body.hub { height: 100vh; height: 100svh; display: flex; flex-direction: column;
   .pilula, .botao, .bloco { transition: none; }
 }
 
-/* Sem suporte a desfoque: vidro vira cor chapada para o texto continuar legível. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .pilula, .menu, .etapa__corpo, .bloco, .botao { background-color: var(--fundo); }
-}
