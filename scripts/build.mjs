@@ -96,9 +96,9 @@ function projeto(repo, config, releases) {
     descricao: t.descricao || repo.description || "",
     linguagem: repo.language,
     atualizado: repo.updatedAt,
-    app: repo.pagesUrl || repo.homepage || null,
+    app: t.app || repo.pagesUrl || repo.homepage || null,
     rotuloApp: t.abrir || "Abrir página",
-    abrirDireto: Boolean(t.abrirDireto && (repo.pagesUrl || repo.homepage)),
+    abrirDireto: Boolean(t.abrirDireto && (t.app || repo.pagesUrl || repo.homepage)),
     codigo: repo.url,
     documentacao: t.documentacao || null,
     release: releases.find((r) => r.repo === repo.name) || null
@@ -198,6 +198,14 @@ async function main() {
     } catch {
       throw err;
     }
+  }
+
+  // Projetos manuais (privados, sem a API): entram com o que o site.config.json diz,
+  // sem link de código nem release.
+  const exclui = new Set(config.repos?.exclude || []);
+  for (const m of config.projetos?.manuais || []) {
+    if (exclui.has(m.name) || repos.some((r) => r.name === m.name)) continue;
+    repos.push({ name: m.name, description: "", language: m.language || null, topics: [], updatedAt: null, url: null, homepage: m.homepage || null, hasPages: false, pagesUrl: null, visibility: "private" });
   }
 
   let readmeHtml = "";
@@ -375,9 +383,10 @@ async function main() {
       const arquivos = arquivosDoRelease(r, config);
       return `<section class="bloco bloco--download" id="${id}" aria-labelledby="${id}-titulo">
       <span class="bloco__num mono">${dois(i + 1)}</span>
-      <h2 class="bloco__nome" id="${id}-titulo">${esc(p?.titulo || r.repo)}</h2>
+      <h2 class="bloco__nome" id="${id}-titulo">${esc(p?.titulo || config.projetos?.textos?.[r.repo]?.titulo || r.repo)}</h2>
       <span class="meta">Versão <span class="mono">${esc(r.tag)}</span> · publicada em ${esc(fmtDate(r.publicadoEm, config.lang))}</span>
       <div class="arquivos">
+        ${p?.app ? `<a class="botao arquivo" href="${esc(p.app)}">${icone("abrir")}<span class="arquivo__rotulo">Navegador (versão web)</span><span class="arquivo__tamanho mono">web</span></a>` : ""}
         ${arquivos
           .map((a) => `<a class="botao arquivo" href="${esc(a.url)}" download>${icone("baixar")}<span class="arquivo__rotulo">${esc(a.rotulo)}</span><span class="arquivo__tamanho mono">${tamanho(a.tamanho)}</span></a>`)
           .join("\n        ")}

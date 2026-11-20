@@ -18,17 +18,25 @@
   },
   "skills": ["Python", "SQL", "Firebird", "C++", "JavaScript", "VBA (Excel)"],
   "projetos": {
-    "comment": "Cada projeto vira uma etapa da página, nesta ordem; os que não estão na lista entram depois, pelo último push. 'textos' sobrepõe o que vem do GitHub. 'abrirDireto': o bloco do índice abre a page do projeto em vez de ir à etapa.",
-    "ordem": ["MeUsMe", "Backup_Maximus", "Eagle_conta_estoque"],
+    "comment": "Cada projeto vira uma etapa da página, nesta ordem; os que não estão na lista entram depois, pelo último push. 'textos' sobrepõe o que vem do GitHub. 'abrirDireto': o bloco do índice abre a page do projeto em vez de ir à etapa. 'app': endereço do aplicativo, quando não é o da page. 'manuais': projetos que entram sem a API do GitHub (privados), sem link de código nem download.",
+    "ordem": ["MeUsMe", "Backup_Maximus", "Pen-Drive-Maker"],
+    "manuais": [
+      { "name": "Pen-Drive-Maker", "language": "Python" }
+    ],
     "textos": {
       "MeUsMe": {
         "descricao": "Programa de organização de tarefas: captura rápida, um passo por vez, agenda e finanças no mesmo lugar. Funciona no navegador, no celular e no Windows, com os dados guardados no próprio aparelho.",
         "abrir": "Abrir aplicativo",
-        "abrirDireto": true
+        "abrirDireto": true,
+        "app": "/MeUsMe/"
       },
       "Backup_Maximus": {
         "titulo": "Backup Maximus",
         "documentacao": "https://tgf231.github.io/backup-maximus-docs/"
+      },
+      "Pen-Drive-Maker": {
+        "titulo": "Pen Drive Maker",
+        "descricao": "Monta pen drives de música para o carro: baixa playlists grandes sem travar no meio e já organiza as faixas em pastas por gênero, artista e álbum."
       },
       "Eagle_conta_estoque": {
         "titulo": "Eagle Contagem de Estoque"
@@ -54,7 +62,7 @@
     "url": "http://pc.megstation.com/"
   },
   "repos": {
-    "exclude": ["TGF231.github.io", "Home-Page", "TGF231", "backup-maximus-docs"],
+    "exclude": ["TGF231.github.io", "Home-Page", "TGF231", "backup-maximus-docs", "Eagle_conta_estoque"],
     "includeForks": false,
     "includeArchived": true
   },
