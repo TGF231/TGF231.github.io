@@ -51,7 +51,7 @@
   "central": {
     "comment": "Botão pequeno no canto superior direito. Leva ao painel do NodeMCU, que liga o PC e abre a central de desenvolvimento.",
     "rotulo": "Entrar",
-    "url": "http://megstation.duckdns.org/"
+    "url": "http://pc.megstation.com/"
   },
   "repos": {
     "exclude": ["TGF231.github.io", "Home-Page", "TGF231", "backup-maximus-docs"],
