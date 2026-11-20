@@ -8,10 +8,9 @@ o GitHub Actions publica o resultado no Pages.
 
 ```
 site.config.json        toda a configuração (textos, ordem dos projetos, downloads, botão Entrar)
-templates/base.html     o esqueleto MegUI de todas as páginas: barra de título, conteúdo, rodapé
-assets/megui/           MegUI gerado pelo design system (tokens, componentes, fontes) — não editar à mão
-assets/css/site.css     só o encaixe da página (etapas, blocos, downloads), todo em tokens do MegUI
-assets/js/app.js        contador e nome da etapa, menu Etapas, "Próxima etapa" e modo retrato
+templates/base.html     o esqueleto de todas as páginas: topo flutuante, fundo em malha, rodapé
+assets/css/site.css     o visual em vidro, temas claro e escuro; a cor principal é --cor (#7D0E0E)
+assets/js/app.js        contador de etapas, menu Etapas, "Próxima etapa" e troca de tema
 content/posts/*.md      notas (Markdown com front matter)
 static/                 arquivos copiados crus para a raiz do site (sw.js)
 scripts/build.mjs       o build: dados + templates -> dist/

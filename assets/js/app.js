@@ -1,22 +1,20 @@
-// Etapas da página: contador e nome da etapa na barra de título, menu Etapas,
-// a ação primária "Próxima etapa" e o modo retrato do MegUI. Sem dependências.
+// Página em etapas: contador no topo, menu Etapas, "Próxima etapa" e troca de tema.
+// Sem dependências.
 (function () {
   "use strict";
 
-  var janela = document.getElementById("janela");
-  var rolavel = document.getElementById("main");
+  var raiz = document.documentElement;
 
-  // Retrato: abaixo de --megui-virada ou mais alto que largo, o que vier primeiro.
-  var virada = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--megui-virada"), 10) || 0;
-  var acao = document.getElementById("proxima");
-  if (virada && janela) {
-    var retrato = window.matchMedia("(max-width: " + (virada - 1) + "px), (max-aspect-ratio: 1/1)");
-    var aplicarRetrato = function () {
-      janela.classList.toggle("retrato", retrato.matches);
-      if (acao) acao.classList.toggle("mg-acao-primaria--retrato", retrato.matches);
-    };
-    aplicarRetrato();
-    retrato.addEventListener("change", aplicarRetrato);
+  // Tema: claro ou escuro, lembrado neste navegador. Sem escolha salva, segue o sistema.
+  var botaoTema = document.getElementById("tema");
+  if (botaoTema) {
+    botaoTema.addEventListener("click", function () {
+      var atual = raiz.getAttribute("data-theme") ||
+        (window.matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "escuro");
+      var novo = atual === "claro" ? "escuro" : "claro";
+      raiz.setAttribute("data-theme", novo);
+      try { localStorage.setItem("tema", novo); } catch (e) { /* armazenamento bloqueado: vale só nesta visita */ }
+    });
   }
 
   // Menu Etapas: abre e fecha no botão, fecha com Esc, clique fora ou ao escolher.
@@ -38,18 +36,17 @@
     });
   }
 
-  // Etapas: a que ocupa o meio da tela é a atual.
+  // Etapas: a que cruza o meio da tela é a atual.
   var etapas = Array.prototype.slice.call(document.querySelectorAll("section.etapa[id]"));
-  if (!etapas.length || !rolavel) return;
+  if (!etapas.length) return;
   var contador = document.getElementById("contador");
-  var contexto = document.getElementById("contexto");
+  var acao = document.getElementById("proxima");
   var atual = 0;
   var dois = function (n) { return (n < 10 ? "0" : "") + n; };
 
   function marcar(i) {
     atual = i;
     if (contador) contador.textContent = dois(i) + " / " + dois(etapas.length - 1);
-    if (contexto) contexto.textContent = etapas[i].getAttribute("data-titulo") || "";
     if (acao) {
       var ultima = i === etapas.length - 1;
       acao.querySelector("span").textContent = ultima ? "Voltar ao início" : "Próxima etapa";
@@ -57,12 +54,10 @@
     }
   }
 
-  // A cada rolagem (no máximo uma vez por quadro), procura a etapa que cruza o meio da área rolável.
   var pendente = false;
   function conferir() {
     pendente = false;
-    var caixa = rolavel.getBoundingClientRect();
-    var meio = caixa.top + caixa.height / 2;
+    var meio = window.innerHeight / 2;
     for (var i = 0; i < etapas.length; i++) {
       var r = etapas[i].getBoundingClientRect();
       if (r.top <= meio && r.bottom > meio) {
@@ -71,7 +66,7 @@
       }
     }
   }
-  rolavel.addEventListener("scroll", function () {
+  window.addEventListener("scroll", function () {
     if (!pendente) { pendente = true; window.requestAnimationFrame(conferir); }
   }, { passive: true });
   conferir();
@@ -83,7 +78,5 @@
       destino.focus({ preventScroll: true });
     });
   }
-
-  // Foco vai para a etapa escolhida, para o leitor de tela acompanhar.
   etapas.forEach(function (e) { e.setAttribute("tabindex", "-1"); });
 })();

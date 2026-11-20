@@ -1,9 +1,9 @@
 // Build do site estático. Node 20+, zero dependências.
 // Uso: node scripts/build.mjs   (saída em dist/)
 //
-// O visual é o MegUI (assets/megui/, gerado pelo design system; não editar à mão).
-// A página inicial é uma sequência de etapas de tela cheia, uma por projeto, com
-// índice em blocos, contador e menu de etapas na barra de título. Repositórios e
+// Visual em vidro (assets/css/site.css), com tema claro e escuro e a cor principal #7D0E0E.
+// A página inicial é uma sequência de etapas de tela cheia: herói, índice em blocos,
+// uma etapa por projeto, notas, sobre e contato, com contador e menu de etapas no topo. Repositórios e
 // releases são buscados no build e viram HTML; o build roda todo dia.
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -48,7 +48,7 @@ function relTime(iso) {
   return y === 1 ? "há 1 ano" : `há ${y} anos`;
 }
 
-// Ícones Lucide (MIT), traço 1,5 e currentColor, como pede o MegUI. Sempre com rótulo ao lado.
+// Ícones Lucide (MIT), traço 1,5 e currentColor. Sempre com rótulo ao lado.
 const ICONES = {
   baixo: '<path d="m6 9 6 6 6-6"/>',
   cima: '<path d="m18 15-6-6-6 6"/>',
@@ -59,10 +59,12 @@ const ICONES = {
   baixar: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
   email: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
   livro: '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
+  sol: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+  lua: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
   notas: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>'
 };
 const icone = (nome, tam = 16) =>
-  `<svg class="mg-icone" width="${tam}" height="${tam}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[nome]}</svg>`;
+  `<svg class="ico" width="${tam}" height="${tam}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[nome]}</svg>`;
 
 const dois = (n) => String(n).padStart(2, "0");
 
@@ -106,7 +108,7 @@ function projeto(repo, config, releases) {
 // Um bloco do índice. O MeUsMe (abrirDireto) abre o aplicativo; os outros levam à própria etapa.
 function bloco({ num, nome, texto, href, rotulo, iconeNome, externo = false }) {
   return `<a class="bloco" href="${esc(href)}"${externo ? ' target="_blank" rel="noopener"' : ""}>
-      <span class="bloco__num mg-mono">${num}</span>
+      <span class="bloco__num mono">${num}</span>
       <span class="bloco__nome">${esc(nome)}</span>
       ${texto ? `<span class="bloco__texto">${esc(texto)}</span>` : ""}
       <span class="bloco__pe"><span>${esc(rotulo)}</span>${icone(iconeNome)}</span>
@@ -114,17 +116,17 @@ function bloco({ num, nome, texto, href, rotulo, iconeNome, externo = false }) {
 }
 
 // Uma etapa de tela cheia. A barra de título mostra o nome dela enquanto estiver na tela.
-function etapa({ id, num, marca, titulo, html }) {
-  return `<section class="etapa" id="${id}" data-titulo="${esc(titulo)}" aria-labelledby="${id}-titulo">
+function etapa({ id, num, marca, titulo, html, classe = "" }) {
+  return `<section class="etapa${classe ? " " + classe : ""}" id="${id}" data-titulo="${esc(titulo)}" aria-labelledby="${id}-titulo">
   <div class="etapa__corpo">
-    <p class="mg-rotulo mg-rotulo--secao etapa__marca"><span class="mg-mono">${num}</span> · ${esc(marca)}</p>
+    <p class="chip etapa__marca"><span class="mono">${num}</span> · ${esc(marca)}</p>
 ${html}
   </div>
 </section>`;
 }
 
 function botao(href, texto, iconeNome, externo = true) {
-  return `<a class="mg-botao" href="${esc(href)}"${externo ? ' target="_blank" rel="noopener"' : ""}>${icone(iconeNome)}<span>${esc(texto)}</span></a>`;
+  return `<a class="botao" href="${esc(href)}"${externo ? ' target="_blank" rel="noopener"' : ""}>${icone(iconeNome)}<span>${esc(texto)}</span></a>`;
 }
 
 // Arquivos de um release: rótulo legível pelo fim do nome, os de apoio (somas, licenças, AAB) ficam de fora.
@@ -226,11 +228,12 @@ async function main() {
       marca,
       menu,
       acao,
-      rolavel: acao ? "mg-janela__rolavel mg-janela__rolavel--com-acao" : "mg-janela__rolavel",
       body,
       centralUrl: esc(central.url || `https://github.com/${config.user}`),
       centralRotulo: esc(central.rotulo || "Entrar"),
       iconeEntrar: icone("entrar", 14),
+      iconeSol: icone("sol", 16),
+      iconeLua: icone("lua", 16),
       rodapeEstado: `Atualizado do GitHub em ${esc(hoje)}`,
       rodapeContagem: `${projetos.length} ${projetos.length === 1 ? "projeto" : "projetos"} · ${releases.length} ${releases.length === 1 ? "download" : "downloads"}`,
       year: String(new Date().getFullYear()),
@@ -259,9 +262,9 @@ async function main() {
       titulo: p.titulo,
       marca: "Projeto",
       projeto: p,
-      html: `    <h2 class="mg-rotulo mg-rotulo--destaque" id="${p.id}-titulo">${esc(p.titulo)}</h2>
+      html: `    <h2 class="titulo" id="${p.id}-titulo">${esc(p.titulo)}</h2>
     ${p.descricao ? `<p class="etapa__texto">${esc(p.descricao)}</p>` : ""}
-    ${ficha ? `<p class="mg-rotulo mg-rotulo--info">${ficha}</p>` : ""}
+    ${ficha ? `<p class="meta">${ficha}</p>` : ""}
     ${acoes.length ? `<div class="etapa__acoes">${acoes.join("")}</div>` : ""}`
     });
   }
@@ -271,11 +274,11 @@ async function main() {
       id: "notas",
       titulo: "Notas",
       marca: "Notas",
-      html: `    <h2 class="mg-rotulo mg-rotulo--destaque" id="notas-titulo">Anotações técnicas</h2>
+      html: `    <h2 class="titulo" id="notas-titulo">Anotações técnicas</h2>
     <ul class="lista-notas">
       ${posts
         .slice(0, 5)
-        .map((post) => `<li><a href="/notas/${esc(post.slug)}/">${esc(post.title)}</a><span class="mg-mono">${esc(fmtDate(post.date, config.lang))}</span></li>`)
+        .map((post) => `<li><a href="/notas/${esc(post.slug)}/">${esc(post.title)}</a><span class="mono">${esc(fmtDate(post.date, config.lang))}</span></li>`)
         .join("")}
     </ul>
     <div class="etapa__acoes">${botao("/notas/", "Todas as notas", "notas", false)}</div>`
@@ -286,7 +289,7 @@ async function main() {
     id: "sobre",
     titulo: "Sobre",
     marca: "Sobre",
-    html: `    <h2 class="mg-rotulo mg-rotulo--destaque" id="sobre-titulo">${esc(config.about.heading)}</h2>
+    html: `    <h2 class="titulo" id="sobre-titulo">${esc(config.about.heading)}</h2>
     ${readmeHtml ? `<div class="prose">${readmeHtml}</div>` : `<p class="etapa__texto">${esc(config.about.text)}</p>`}
     <div class="etiquetas">${(config.skills || []).map((s) => `<span class="etiqueta">${esc(s)}</span>`).join("")}</div>`
   });
@@ -295,7 +298,7 @@ async function main() {
     id: "contato",
     titulo: "Contato",
     marca: "Contato",
-    html: `    <h2 class="mg-rotulo mg-rotulo--destaque" id="contato-titulo">${esc(config.contact.heading)}</h2>
+    html: `    <h2 class="titulo" id="contato-titulo">${esc(config.contact.heading)}</h2>
     <p class="etapa__texto">${esc(config.contact.text)}</p>
     <div class="etapa__acoes">
       ${botao(`mailto:${config.email}`, config.email, "email", false)}
@@ -303,11 +306,13 @@ async function main() {
     </div>`
   });
 
+  // Índice logo depois do herói: um bloco por etapa (o MeUsMe abre o aplicativo direto).
+  etapas.splice(1, 0, { id: "indice", titulo: "Índice", marca: "Boas-vindas", html: null });
   etapas.forEach((e, i) => (e.num = dois(i)));
   const ultima = dois(etapas.length - 1);
 
   const blocos = etapas
-    .slice(1)
+    .slice(2)
     .map((e) =>
       e.projeto?.abrirDireto
         ? bloco({ num: e.num, nome: e.titulo, texto: e.projeto.descricao, href: e.projeto.app, rotulo: e.projeto.rotuloApp, iconeNome: "abrir", externo: true })
@@ -319,19 +324,29 @@ async function main() {
     );
   }
 
-  etapas[0].html = `    <h1 class="mg-rotulo mg-rotulo--destaque" id="inicio-titulo">${esc(config.name)}</h1>
-    <p class="mg-rotulo mg-rotulo--titulo etapa__papel">${esc(config.role)}</p>
+  // Herói: nome grande com o ponto na cor principal e uma faixa com as linguagens.
+  const [primeiro, ...resto] = config.name.split(" ");
+  const faixa = (config.skills || []).map(esc).join('<span class="faixa__sep">/</span>');
+  etapas[0].classe = "etapa--heroi";
+  etapas[0].html = `    <h1 class="titulo titulo--heroi" id="inicio-titulo">${esc(primeiro)}${resto.length ? `<br>${esc(resto.join(" "))}` : ""}<span class="ponto">.</span></h1>
+    <p class="etapa__papel">${esc(config.role)}</p>
     <p class="etapa__texto">${esc(config.description)}</p>
+    <div class="etapa__acoes">
+      <a class="botao botao--primario" href="#indice">${icone("baixo")}<span>Começar</span></a>
+      ${releases.length ? botao("/downloads/", "Downloads", "baixar", false) : ""}
+    </div>
+    <div class="faixa" aria-hidden="true"><div class="faixa__trilho"><span>${faixa}<span class="faixa__sep">/</span></span><span>${faixa}<span class="faixa__sep">/</span></span></div></div>`;
+  etapas[1].html = `    <h2 class="titulo" id="indice-titulo">O que tem por aqui</h2>
     <div class="blocos">
     ${blocos.join("\n    ")}
     </div>`;
 
   const menuEtapas = `<div class="etapas-menu">
-    <button type="button" class="mg-botao mg-botao--compacta" id="etapas-botao" aria-haspopup="menu" aria-expanded="false" aria-controls="etapas-lista">${icone("lista", 14)}<span>Etapas</span></button>
-    <div class="mg-menu etapas-menu__lista" id="etapas-lista" role="menu" hidden>
-      ${etapas.map((e) => `<a class="mg-menu__item" role="menuitem" href="#${e.id}"><span>${esc(e.titulo)}</span><span class="mg-menu__atalho">${e.num}</span></a>`).join("\n      ")}
-      ${releases.length ? `<div class="mg-menu__separador" role="separator"></div>
-      <a class="mg-menu__item" role="menuitem" href="/downloads/"><span>Downloads</span><span class="mg-menu__atalho">${releases.length} ${releases.length === 1 ? "programa" : "programas"}</span></a>` : ""}
+    <button type="button" class="pilula" id="etapas-botao" aria-haspopup="menu" aria-expanded="false" aria-controls="etapas-lista">${icone("lista", 14)}<span>Etapas</span></button>
+    <div class="menu etapas-menu__lista" id="etapas-lista" role="menu" hidden>
+      ${etapas.map((e) => `<a class="menu__item" role="menuitem" href="#${e.id}"><span>${esc(e.titulo)}</span><span class="menu__num mono">${e.num}</span></a>`).join("\n      ")}
+      ${releases.length ? `<div class="menu__sep" role="separator"></div>
+      <a class="menu__item" role="menuitem" href="/downloads/"><span>Downloads</span><span class="menu__num mono">${releases.length} ${releases.length === 1 ? "programa" : "programas"}</span></a>` : ""}
     </div>
   </div>`;
 
@@ -342,9 +357,9 @@ async function main() {
       description: esc(config.description),
       canonical: esc(config.url),
       contexto: "Início",
-      marca: `<span class="mg-barra-titulo__marca mg-mono" id="contador">00 / ${ultima}</span>`,
+      marca: `<span class="pilula pilula--info mono" id="contador">00 / ${ultima}</span>`,
       menu: menuEtapas,
-      acao: `<button type="button" class="mg-acao-primaria" id="proxima">${icone("baixo", 20)}<span>Próxima etapa</span></button>`,
+      acao: `<button type="button" class="acao botao botao--primario" id="proxima">${icone("baixo", 20)}<span>Próxima etapa</span></button>`,
       body: etapas.map(etapa).join("\n\n")
     })
   );
@@ -359,12 +374,12 @@ async function main() {
       const id = p?.id || r.repo.toLowerCase();
       const arquivos = arquivosDoRelease(r, config);
       return `<section class="bloco bloco--download" id="${id}" aria-labelledby="${id}-titulo">
-      <span class="bloco__num mg-mono">${dois(i + 1)}</span>
+      <span class="bloco__num mono">${dois(i + 1)}</span>
       <h2 class="bloco__nome" id="${id}-titulo">${esc(p?.titulo || r.repo)}</h2>
-      <span class="mg-rotulo mg-rotulo--info">Versão <span class="mg-mono">${esc(r.tag)}</span> · publicada em ${esc(fmtDate(r.publicadoEm, config.lang))}</span>
+      <span class="meta">Versão <span class="mono">${esc(r.tag)}</span> · publicada em ${esc(fmtDate(r.publicadoEm, config.lang))}</span>
       <div class="arquivos">
         ${arquivos
-          .map((a) => `<a class="mg-botao arquivo" href="${esc(a.url)}" download>${icone("baixar")}<span class="arquivo__rotulo">${esc(a.rotulo)}</span><span class="arquivo__tamanho mg-mono">${tamanho(a.tamanho)}</span></a>`)
+          .map((a) => `<a class="botao arquivo" href="${esc(a.url)}" download>${icone("baixar")}<span class="arquivo__rotulo">${esc(a.rotulo)}</span><span class="arquivo__tamanho mono">${tamanho(a.tamanho)}</span></a>`)
           .join("\n        ")}
       </div>
       <span class="bloco__pe"><a href="${esc(r.pagina)}" target="_blank" rel="noopener">Notas da versão ${esc(r.tag)}</a></span>
@@ -377,11 +392,11 @@ async function main() {
         description: "Instaladores e versões mais recentes de cada programa.",
         canonical: `${esc(config.url)}/downloads/`,
         contexto: "Downloads",
-        marca: `<span class="mg-barra-titulo__marca mg-mono">${lista.length} ${lista.length === 1 ? "programa" : "programas"}</span>`,
+        marca: `<span class="pilula pilula--info mono">${lista.length} ${lista.length === 1 ? "programa" : "programas"}</span>`,
         body: `<section class="etapa etapa--livre" aria-labelledby="downloads-titulo">
   <div class="etapa__corpo">
-    <p class="mg-rotulo mg-rotulo--secao etapa__marca"><a href="/">Início</a> · Downloads</p>
-    <h1 class="mg-rotulo mg-rotulo--destaque" id="downloads-titulo">Versões mais recentes</h1>
+    <p class="chip etapa__marca"><a href="/">Início</a> · Downloads</p>
+    <h1 class="titulo" id="downloads-titulo">Versões mais recentes</h1>
     <p class="etapa__texto">Cada bloco aponta para o último release publicado no GitHub de cada programa. A lista é conferida todo dia.</p>
     <div class="blocos blocos--downloads">
     ${blocosDownload.join("\n    ")}
@@ -395,7 +410,7 @@ async function main() {
   // ---------------- notas ----------------
   if (posts.length) {
     const listaNotas = `<ul class="lista-notas">
-    ${posts.map((post) => `<li><a href="/notas/${esc(post.slug)}/">${esc(post.title)}</a><span class="mg-mono">${esc(fmtDate(post.date, config.lang))}</span></li>`).join("")}
+    ${posts.map((post) => `<li><a href="/notas/${esc(post.slug)}/">${esc(post.title)}</a><span class="mono">${esc(fmtDate(post.date, config.lang))}</span></li>`).join("")}
   </ul>`;
     await write(
       "notas/index.html",
@@ -406,8 +421,8 @@ async function main() {
         contexto: "Notas",
         body: `<section class="etapa etapa--livre" aria-labelledby="notas-titulo">
   <div class="etapa__corpo">
-    <p class="mg-rotulo mg-rotulo--secao etapa__marca"><a href="/">Início</a> · Notas</p>
-    <h1 class="mg-rotulo mg-rotulo--destaque" id="notas-titulo">Anotações técnicas</h1>
+    <p class="chip etapa__marca"><a href="/">Início</a> · Notas</p>
+    <h1 class="titulo" id="notas-titulo">Anotações técnicas</h1>
     ${listaNotas}
   </div>
 </section>`
@@ -424,8 +439,8 @@ async function main() {
           contexto: post.title,
           body: `<article class="etapa etapa--livre" aria-labelledby="nota-titulo">
   <div class="etapa__corpo prose">
-    <p class="mg-rotulo mg-rotulo--secao etapa__marca"><a href="/notas/">Notas</a> · <span class="mg-mono">${esc(fmtDate(post.date, config.lang))}</span></p>
-    <h1 class="mg-rotulo mg-rotulo--destaque" id="nota-titulo">${esc(post.title)}</h1>
+    <p class="chip etapa__marca"><a href="/notas/">Notas</a> · <span class="mono">${esc(fmtDate(post.date, config.lang))}</span></p>
+    <h1 class="titulo" id="nota-titulo">${esc(post.title)}</h1>
     ${post.html}
   </div>
 </article>`

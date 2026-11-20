@@ -10,40 +10,47 @@
 <meta property="og:description" content="{{description}}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{canonical}}">
+<meta name="color-scheme" content="dark light">
 <link rel="icon" href="/assets/img/avatar.png">
-<link rel="stylesheet" href="/assets/megui/megui.css">
-<link rel="stylesheet" href="/assets/megui/megui-componentes.css">
+<!-- Tema salvo (claro ou escuro) antes de pintar, para a página não piscar ao abrir. -->
+<script>try { var t = localStorage.getItem("tema"); if (t === "claro" || t === "escuro") document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/assets/css/site.css">
 </head>
 <body>
 <a class="pular" href="#main">Pular para o conteúdo</a>
 
-<div class="mg-janela mg-janela--tela" id="janela">
-  <header class="mg-barra-titulo">
-    <a class="mg-barra-titulo__app" href="/">{{brand}}</a>
-    <span class="mg-barra-titulo__contexto" id="contexto">{{contexto}}</span>
-    {{marca}}
-    <div class="mg-espaco"></div>
-    {{menu}}
-    <a class="mg-botao mg-botao--compacta entrar" href="{{centralUrl}}" rel="nofollow">{{iconeEntrar}}<span>{{centralRotulo}}</span></a>
-  </header>
+<!-- Fundo em malha: manchas de cor desfocadas atrás do vidro. -->
+<div class="fundo" aria-hidden="true"><span class="mancha mancha--1"></span><span class="mancha mancha--2"></span><span class="mancha mancha--3"></span></div>
 
-  <div class="mg-janela__conteudo">
-    <main id="main" class="{{rolavel}}" tabindex="-1">
-{{body}}
-    </main>
-    {{acao}}
+<header class="topo">
+  <div class="topo__lado">
+    <a class="pilula topo__inicio" href="/"><span class="ponto-vivo" aria-hidden="true"></span>Início</a>
   </div>
+  <a class="marca" href="/">{{brand}}<span class="ponto">.</span></a>
+  <div class="topo__lado topo__lado--dir">
+    {{marca}}
+    {{menu}}
+    <button type="button" class="pilula pilula--icone" id="tema" aria-label="Trocar entre tema claro e escuro" title="Tema claro ou escuro">
+      <span class="tema__sol">{{iconeSol}}</span><span class="tema__lua">{{iconeLua}}</span>
+    </button>
+    <a class="pilula pilula--entrar" href="{{centralUrl}}" rel="nofollow">{{iconeEntrar}}<span>{{centralRotulo}}</span></a>
+  </div>
+</header>
 
-  <footer class="mg-rodape">
-    <span class="mg-rodape__estado"><span class="mg-rodape__ponto mg-rodape__ponto--ok" aria-hidden="true"></span>{{rodapeEstado}}</span>
-    <span class="mg-rodape__contagem">{{rodapeContagem}}</span>
-    <div class="mg-espaco"></div>
-    <span class="mg-rodape__versao">{{year}} · {{brand}}</span>
-  </footer>
-</div>
+<main id="main" tabindex="-1">
+{{body}}
+</main>
+{{acao}}
 
-<script src="/assets/megui/megui.js" defer></script>
+<footer class="rodape">
+  <span><span class="ponto-vivo" aria-hidden="true"></span>{{rodapeEstado}}</span>
+  <span class="mono">{{rodapeContagem}}</span>
+  <span>{{year}} · {{brand}}</span>
+</footer>
+
 <script src="/assets/js/app.js" defer></script>
 </body>
 </html>
