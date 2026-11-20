@@ -298,6 +298,79 @@ a.bloco:hover { transform: translateY(-4px); border-color: var(--borda-forte); b
 }
 .rodape > span { display: inline-flex; align-items: center; gap: 8px; }
 
+/* ---------- Hub: uma tela só, sem rolar ---------- */
+body.hub { height: 100vh; height: 100svh; display: flex; flex-direction: column; overflow: hidden; }
+.hub .marca { visibility: hidden; }          /* o nome já está grande no hub */
+.hub .topo__inicio { display: none; }
+.hub main { flex: 1 1 auto; min-height: 0; display: flex; padding: 76px 20px 8px; }
+.hub .rodape { padding: 8px 16px 14px; font-size: 12px; }
+.hub__corpo { flex: 1 1 auto; min-height: 0; width: 100%; max-width: var(--largura); margin: 0 auto; display: flex; flex-direction: column; gap: clamp(14px, 2.6vh, 28px); }
+.hub__cabeca { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 18px; }
+.hub__titulo { margin: 0; font: 800 clamp(34px, 5.4vw, 72px)/0.95 var(--fonte-titulo); letter-spacing: -0.055em; }
+.hub__papel { margin: 0; font: 600 clamp(15px, 1.6vw, 20px)/1.3 var(--fonte-titulo); letter-spacing: -0.02em; color: var(--cor-texto); }
+.hub__grade {
+  flex: 1 1 auto; min-height: 0; display: grid; gap: clamp(10px, 1.4vw, 16px);
+  grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)) auto;
+}
+
+.cartao {
+  position: relative; display: flex; flex-direction: column; gap: 8px; min-width: 0; min-height: 0; overflow: hidden;
+  padding: clamp(16px, 2vw, 24px); border-radius: var(--raio); border: 1px solid var(--borda); background: var(--vidro);
+  -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
+  box-shadow: var(--brilho-interno);
+  transition: transform var(--mov), border-color var(--mov), box-shadow var(--mov);
+}
+.cartao:has(.cartao__alvo:hover) { transform: translateY(-3px); border-color: var(--borda-forte); box-shadow: var(--sombra), var(--brilho-interno), 0 0 0 1px var(--cor-brilho); }
+.cartao__alvo { position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+.cartao__alvo:focus-visible { outline: 2px solid var(--cor-texto); outline-offset: 2px; }
+.cartao__num { font-size: 12px; color: var(--cor-texto); }
+.cartao__nome { margin: 0; font: 700 clamp(19px, 1.9vw, 26px)/1.1 var(--fonte-titulo); letter-spacing: -0.03em; }
+.cartao__texto {
+  margin: 0; color: var(--texto-2); font-size: clamp(13px, 1.1vw, 15px); line-height: 1.5;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; flex: 0 0 auto;
+}
+.cartao__pe { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; padding-top: 6px; }
+.cartao__acao { display: inline-flex; align-items: center; gap: 8px; font: 600 11px/1 var(--fonte); letter-spacing: 0.14em; text-transform: uppercase; color: var(--texto-2); }
+.cartao__links { position: relative; z-index: 2; display: inline-flex; gap: 12px; }
+.cartao__link { font-size: 13px; color: var(--texto-3); text-decoration: underline; text-decoration-color: var(--borda-forte); text-underline-offset: 3px; }
+.cartao__link:hover { color: var(--texto); }
+
+/* Destaque: o primeiro projeto ocupa duas colunas e duas linhas, com o brilho da cor principal. */
+.cartao--destaque { grid-column: span 2; grid-row: span 2; justify-content: flex-end; border-color: var(--borda-forte);
+  background: linear-gradient(150deg, var(--cor-brilho), transparent 60%), var(--vidro); }
+.cartao--destaque .cartao__nome { font-size: clamp(30px, 3.6vw, 52px); letter-spacing: -0.05em; }
+.cartao--destaque .cartao__texto { -webkit-line-clamp: 4; font-size: clamp(14px, 1.2vw, 17px); }
+.cartao--destaque .cartao__acao { color: var(--texto); }
+/* Contato: faixa fina embaixo, na largura toda, com texto e botões na mesma linha. */
+.cartao--contato { grid-column: 1 / -1; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 8px 18px; padding-block: 14px; }
+.cartao--contato .cartao__texto { flex: 1 1 260px; -webkit-line-clamp: 1; }
+.cartao__pe--botoes { margin-top: 0; padding-top: 0; justify-content: flex-start; }
+.cartao__pe--botoes .botao { min-height: 40px; padding: 0 16px; font-size: 14px; }
+
+/* Telas médias: 2 colunas; o destaque ocupa a linha toda. */
+@media (max-width: 1000px) {
+  .hub__grade { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)) auto; }
+  .cartao--destaque { grid-column: span 2; grid-row: span 1; }
+}
+/* Celular: cartões compactos (sem texto, menos as do destaque e contato) para caber sem rolar. */
+@media (max-width: 640px) {
+  .hub main { padding: 64px 12px 4px; }
+  .hub__grade { gap: 10px; }
+  .cartao { padding: 14px; gap: 4px; }
+  .cartao:not(.cartao--destaque):not(.cartao--contato) .cartao__texto { display: none; }
+  .cartao__links { display: none; }
+  .cartao--destaque .cartao__nome { font-size: 30px; }
+  .cartao--destaque .cartao__texto { -webkit-line-clamp: 2; }
+  .cartao--contato .cartao__texto { display: none; }
+  .cartao__pe--botoes .botao { min-height: 36px; padding: 0 12px; font-size: 13px; }
+  .hub .rodape { display: none; }
+}
+/* Altura muito baixa: deixa rolar em vez de cortar o conteúdo. */
+@media (max-height: 560px) {
+  body.hub { height: auto; overflow: auto; }
+  .hub__grade { grid-auto-rows: minmax(150px, auto); }
+}
+
 /* ---------- Telas menores ---------- */
 @media (max-width: 760px) {
   .topo { grid-template-columns: auto 1fr; }

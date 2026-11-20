@@ -2,8 +2,8 @@
 // Uso: node scripts/build.mjs   (saída em dist/)
 //
 // Visual em vidro (assets/css/site.css), com tema claro e escuro e a cor principal #7D0E0E.
-// A página inicial é uma sequência de etapas de tela cheia: herói, índice em blocos,
-// uma etapa por projeto, notas, sobre e contato, com contador e menu de etapas no topo. Repositórios e
+// A página inicial é um hub de uma tela só: um cartão por projeto, mais Downloads,
+// Notas e Contato, sem rolar a página. Repositórios e
 // releases são buscados no build e viram HTML; o build roda todo dia.
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -103,26 +103,6 @@ function projeto(repo, config, releases) {
     documentacao: t.documentacao || null,
     release: releases.find((r) => r.repo === repo.name) || null
   };
-}
-
-// Um bloco do índice. O MeUsMe (abrirDireto) abre o aplicativo; os outros levam à própria etapa.
-function bloco({ num, nome, texto, href, rotulo, iconeNome, externo = false }) {
-  return `<a class="bloco" href="${esc(href)}"${externo ? ' target="_blank" rel="noopener"' : ""}>
-      <span class="bloco__num mono">${num}</span>
-      <span class="bloco__nome">${esc(nome)}</span>
-      ${texto ? `<span class="bloco__texto">${esc(texto)}</span>` : ""}
-      <span class="bloco__pe"><span>${esc(rotulo)}</span>${icone(iconeNome)}</span>
-    </a>`;
-}
-
-// Uma etapa de tela cheia. A barra de título mostra o nome dela enquanto estiver na tela.
-function etapa({ id, num, marca, titulo, html, classe = "" }) {
-  return `<section class="etapa${classe ? " " + classe : ""}" id="${id}" data-titulo="${esc(titulo)}" aria-labelledby="${id}-titulo">
-  <div class="etapa__corpo">
-    <p class="chip etapa__marca"><span class="mono">${num}</span> · ${esc(marca)}</p>
-${html}
-  </div>
-</section>`;
 }
 
 function botao(href, texto, iconeNome, externo = true) {
@@ -228,7 +208,7 @@ async function main() {
   const hoje = fmtDate(new Date().toISOString(), config.lang);
   const central = config.central || {};
 
-  const page = ({ contexto, marca = "", menu = "", acao = "", body, ...vars }) =>
+  const page = ({ contexto, marca = "", menu = "", acao = "", classeCorpo = "pagina", body, ...vars }) =>
     template(base, {
       lang: config.lang,
       brand: esc(config.name),
@@ -236,6 +216,7 @@ async function main() {
       marca,
       menu,
       acao,
+      classeCorpo,
       body,
       centralUrl: esc(central.url || `https://github.com/${config.user}`),
       centralRotulo: esc(central.rotulo || "Entrar"),
@@ -248,115 +229,55 @@ async function main() {
       ...vars
     });
 
-  // ---------------- home: etapas ----------------
-  const etapas = [];
+  // ---------------- home: hub de uma tela ----------------
+  // Um cartão por projeto (o primeiro em destaque), mais Downloads, Notas e Contato.
+  // O cartão inteiro leva à ação principal; links secundários ficam no pé dele.
+  const cartao = ({ classe = "", num, nome, texto, href, rotulo, iconeNome, externo = false, links = [] }) => `<article class="cartao${classe ? " " + classe : ""}">
+      <a class="cartao__alvo" href="${esc(href)}"${externo ? ' target="_blank" rel="noopener"' : ""} aria-label="${esc(nome)}: ${esc(rotulo)}"></a>
+      <span class="cartao__num mono">${num}</span>
+      <h2 class="cartao__nome">${esc(nome)}</h2>
+      ${texto ? `<p class="cartao__texto">${esc(texto)}</p>` : ""}
+      <div class="cartao__pe">
+        <span class="cartao__acao">${icone(iconeNome)}<span>${esc(rotulo)}</span></span>
+        ${links.length ? `<span class="cartao__links">${links.join("")}</span>` : ""}
+      </div>
+    </article>`;
+  const link = (href, texto, externo = true) =>
+    `<a class="cartao__link" href="${esc(href)}"${externo ? ' target="_blank" rel="noopener"' : ""}>${esc(texto)}</a>`;
 
-  // Os blocos do índice são montados depois, quando todas as etapas existem.
-  etapas.push({ id: "inicio", titulo: "Início", marca: config.kicker, html: null });
-
-  for (const p of projetos) {
-    const ficha = [p.linguagem, p.atualizado && `atualizado ${relTime(p.atualizado)}`, p.release && `versão ${p.release.tag}`]
-      .filter(Boolean)
-      .map(esc)
-      .join(" · ");
-    const acoes = [
-      p.app && botao(p.app, p.rotuloApp, "abrir"),
-      p.release && botao(`/downloads/#${p.id}`, `Baixar ${p.release.tag}`, "baixar", false),
-      p.documentacao && botao(p.documentacao, "Documentação", "livro"),
-      p.codigo && botao(p.codigo, "Ver código", "codigo")
+  const cartoes = projetos.map((p, i) => {
+    const principal = p.app
+      ? { href: p.app, rotulo: p.rotuloApp, iconeNome: "abrir", externo: !p.app.startsWith("/") }
+      : p.release
+        ? { href: `/downloads/#${p.id}`, rotulo: `Baixar ${p.release.tag}`, iconeNome: "baixar" }
+        : p.documentacao
+          ? { href: p.documentacao, rotulo: "Documentação", iconeNome: "livro", externo: true }
+          : p.codigo
+            ? { href: p.codigo, rotulo: "Ver código", iconeNome: "codigo", externo: true }
+            : { href: "#contato", rotulo: "Em uso pessoal", iconeNome: "abrir" };
+    const links = [
+      p.app && p.release && link(`/downloads/#${p.id}`, `Baixar ${p.release.tag}`, false),
+      principal.rotulo !== "Documentação" && p.documentacao && link(p.documentacao, "Documentação"),
+      principal.rotulo !== "Ver código" && p.codigo && link(p.codigo, "Código")
     ].filter(Boolean);
-    etapas.push({
-      id: p.id,
-      titulo: p.titulo,
-      marca: "Projeto",
-      projeto: p,
-      html: `    <h2 class="titulo" id="${p.id}-titulo">${esc(p.titulo)}</h2>
-    ${p.descricao ? `<p class="etapa__texto">${esc(p.descricao)}</p>` : ""}
-    ${ficha ? `<p class="meta">${ficha}</p>` : ""}
-    ${acoes.length ? `<div class="etapa__acoes">${acoes.join("")}</div>` : ""}`
-    });
-  }
-
-  if (posts.length) {
-    etapas.push({
-      id: "notas",
-      titulo: "Notas",
-      marca: "Notas",
-      html: `    <h2 class="titulo" id="notas-titulo">Anotações técnicas</h2>
-    <ul class="lista-notas">
-      ${posts
-        .slice(0, 5)
-        .map((post) => `<li><a href="/notas/${esc(post.slug)}/">${esc(post.title)}</a><span class="mono">${esc(fmtDate(post.date, config.lang))}</span></li>`)
-        .join("")}
-    </ul>
-    <div class="etapa__acoes">${botao("/notas/", "Todas as notas", "notas", false)}</div>`
-    });
-  }
-
-  etapas.push({
-    id: "sobre",
-    titulo: "Sobre",
-    marca: "Sobre",
-    html: `    <h2 class="titulo" id="sobre-titulo">${esc(config.about.heading)}</h2>
-    ${readmeHtml ? `<div class="prose">${readmeHtml}</div>` : `<p class="etapa__texto">${esc(config.about.text)}</p>`}
-    <div class="etiquetas">${(config.skills || []).map((s) => `<span class="etiqueta">${esc(s)}</span>`).join("")}</div>`
+    return cartao({ classe: i === 0 ? "cartao--destaque" : "", num: dois(i + 1), nome: p.titulo, texto: p.descricao, links, ...principal });
   });
-
-  etapas.push({
-    id: "contato",
-    titulo: "Contato",
-    marca: "Contato",
-    html: `    <h2 class="titulo" id="contato-titulo">${esc(config.contact.heading)}</h2>
-    <p class="etapa__texto">${esc(config.contact.text)}</p>
-    <div class="etapa__acoes">
-      ${botao(`mailto:${config.email}`, config.email, "email", false)}
-      ${botao(profileUrl, `github.com/${config.user}`, "codigo")}
-    </div>`
-  });
-
-  // Índice logo depois do herói: um bloco por etapa (o MeUsMe abre o aplicativo direto).
-  etapas.splice(1, 0, { id: "indice", titulo: "Índice", marca: "Boas-vindas", html: null });
-  etapas.forEach((e, i) => (e.num = dois(i)));
-  const ultima = dois(etapas.length - 1);
-
-  const blocos = etapas
-    .slice(2)
-    .map((e) =>
-      e.projeto?.abrirDireto
-        ? bloco({ num: e.num, nome: e.titulo, texto: e.projeto.descricao, href: e.projeto.app, rotulo: e.projeto.rotuloApp, iconeNome: "abrir", externo: true })
-        : bloco({ num: e.num, nome: e.titulo, texto: e.projeto?.descricao, href: `#${e.id}`, rotulo: "Ver", iconeNome: "baixo" })
-    );
+  let n = projetos.length;
   if (releases.length) {
-    blocos.push(
-      bloco({ num: "DL", nome: "Downloads", texto: "Instaladores e versões mais recentes de cada programa.", href: "/downloads/", rotulo: "Abrir downloads", iconeNome: "baixar" })
-    );
+    cartoes.push(cartao({ num: dois(++n), nome: "Downloads", texto: "Instaladores e a versão mais recente de cada programa.", href: "/downloads/", rotulo: `${releases.length} ${releases.length === 1 ? "programa" : "programas"}`, iconeNome: "baixar" }));
   }
-
-  // Herói: nome grande com o ponto na cor principal e uma faixa com as linguagens.
-  const [primeiro, ...resto] = config.name.split(" ");
-  const faixa = (config.skills || []).map(esc).join('<span class="faixa__sep">/</span>');
-  etapas[0].classe = "etapa--heroi";
-  etapas[0].html = `    <h1 class="titulo titulo--heroi" id="inicio-titulo">${esc(primeiro)}${resto.length ? `<br>${esc(resto.join(" "))}` : ""}<span class="ponto">.</span></h1>
-    <p class="etapa__papel">${esc(config.role)}</p>
-    <p class="etapa__texto">${esc(config.description)}</p>
-    <div class="etapa__acoes">
-      <a class="botao botao--primario" href="#indice">${icone("baixo")}<span>Começar</span></a>
-      ${releases.length ? botao("/downloads/", "Downloads", "baixar", false) : ""}
-    </div>
-    <div class="faixa" aria-hidden="true"><div class="faixa__trilho"><span>${faixa}<span class="faixa__sep">/</span></span><span>${faixa}<span class="faixa__sep">/</span></span></div></div>`;
-  etapas[1].html = `    <h2 class="titulo" id="indice-titulo">O que tem por aqui</h2>
-    <div class="blocos">
-    ${blocos.join("\n    ")}
-    </div>`;
-
-  const menuEtapas = `<div class="etapas-menu">
-    <button type="button" class="pilula" id="etapas-botao" aria-haspopup="menu" aria-expanded="false" aria-controls="etapas-lista">${icone("lista", 14)}<span>Etapas</span></button>
-    <div class="menu etapas-menu__lista" id="etapas-lista" role="menu" hidden>
-      ${etapas.map((e) => `<a class="menu__item" role="menuitem" href="#${e.id}"><span>${esc(e.titulo)}</span><span class="menu__num mono">${e.num}</span></a>`).join("\n      ")}
-      ${releases.length ? `<div class="menu__sep" role="separator"></div>
-      <a class="menu__item" role="menuitem" href="/downloads/"><span>Downloads</span><span class="menu__num mono">${releases.length} ${releases.length === 1 ? "programa" : "programas"}</span></a>` : ""}
-    </div>
-  </div>`;
+  if (posts.length) {
+    cartoes.push(cartao({ num: dois(++n), nome: "Notas", texto: posts[0].title, href: "/notas/", rotulo: `${posts.length} ${posts.length === 1 ? "nota" : "notas"}`, iconeNome: "notas" }));
+  }
+  cartoes.push(`<article class="cartao cartao--contato" id="contato">
+      <span class="cartao__num mono">${dois(++n)}</span>
+      <h2 class="cartao__nome">Contato</h2>
+      <p class="cartao__texto">${esc(config.contact.text)}</p>
+      <div class="cartao__pe cartao__pe--botoes">
+        <a class="botao botao--primario" href="mailto:${esc(config.email)}">${icone("email")}<span>${esc(config.email)}</span></a>
+        <a class="botao" href="${esc(profileUrl)}" target="_blank" rel="noopener">${icone("codigo")}<span>GitHub</span></a>
+      </div>
+    </article>`);
 
   await write(
     "index.html",
@@ -365,10 +286,16 @@ async function main() {
       description: esc(config.description),
       canonical: esc(config.url),
       contexto: "Início",
-      marca: `<span class="pilula pilula--info mono" id="contador">00 / ${ultima}</span>`,
-      menu: menuEtapas,
-      acao: `<button type="button" class="acao botao botao--primario" id="proxima">${icone("baixo", 20)}<span>Próxima etapa</span></button>`,
-      body: etapas.map(etapa).join("\n\n")
+      classeCorpo: "hub",
+      body: `<section class="hub__corpo" aria-labelledby="hub-titulo">
+  <header class="hub__cabeca">
+    <h1 class="hub__titulo" id="hub-titulo">${esc(config.name)}<span class="ponto">.</span></h1>
+    <p class="hub__papel">${esc(config.role)}</p>
+  </header>
+  <div class="hub__grade">
+    ${cartoes.join("\n    ")}
+  </div>
+</section>`
     })
   );
 
