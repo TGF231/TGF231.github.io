@@ -10,7 +10,7 @@ o GitHub Actions publica o resultado no Pages.
 site.config.json        toda a configuração (textos, ordem dos projetos, downloads, botão Entrar)
 templates/base.html     o esqueleto de todas as páginas: topo flutuante, fundo em malha, rodapé
 assets/css/site.css     o visual em vidro, temas claro e escuro; a cor principal é --cor (#7D0E0E)
-assets/js/app.js        contador de etapas, menu Etapas, "Próxima etapa" e troca de tema
+assets/js/app.js        troca de tema claro e escuro
 content/posts/*.md      notas (Markdown com front matter)
 static/                 arquivos copiados crus para a raiz do site (sw.js)
 scripts/build.mjs       o build: dados + templates -> dist/
@@ -22,9 +22,9 @@ dist/                   saída do build (não versionada)
 
 ## Páginas
 
-- **`/`**: uma etapa de tela cheia por projeto (ordem em `projetos.ordem`), mais Notas,
-  Sobre e Contato. A etapa 00 tem os blocos do índice; o bloco com `abrirDireto`
-  (o MeUsMe) abre o aplicativo em vez de ir à etapa.
+- **`/`**: hub de uma tela, sem rolar. Um cartão por projeto (ordem em
+  `projetos.ordem`, o primeiro em destaque), mais Downloads, Notas e uma faixa de
+  Contato. Privados entram por `projetos.manuais`, com o texto de `projetos.textos`.
 - **`/downloads/`**: um bloco por repositório de `downloads.repos` que tenha release
   publicado, sempre o mais recente (rascunho e pré-lançamento ficam de fora). Os
   nomes dos arquivos viram rótulos por `downloads.rotulos`; `downloads.ocultar` tira

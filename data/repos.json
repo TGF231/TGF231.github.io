@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-20T22:43:45.037Z",
+  "generatedAt": "2026-11-20T22:58:59.017Z",
   "user": "TGF231",
   "repos": [
     {
@@ -37,21 +37,16 @@
       "visibility": "public"
     },
     {
-      "name": "Eagle_conta_estoque",
-      "description": "Contagem de Estoque para o Eagle Gestão",
+      "name": "Pen-Drive-Maker",
+      "description": "",
       "language": "Python",
       "topics": [],
-      "stars": 0,
-      "forks": 0,
-      "isFork": false,
-      "archived": false,
-      "updatedAt": "2026-09-30T13:04:09Z",
-      "createdAt": "2026-09-28T12:19:44Z",
-      "url": "https://github.com/TGF231/Eagle_conta_estoque",
+      "updatedAt": null,
+      "url": null,
       "homepage": null,
       "hasPages": false,
       "pagesUrl": null,
-      "visibility": "public"
+      "visibility": "private"
     }
   ]
 }
