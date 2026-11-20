@@ -1,6 +1,6 @@
-/* Superfícies chapadas, cantos redondos, tema escuro e claro. A cor principal é #7D0E0E
-   (--cor): preenche a ação principal, os pontos e os brilhos. Todos os valores ficam nas
-   variáveis abaixo. */
+/* Base no Atlassian Design System (atlassian.design): neutros cinza, superfícies chapadas,
+   elevação discreta e cantos da escala do Atlassian. A cor principal é #7D0E0E (--cor):
+   preenche a ação principal, os pontos e os brilhos. Todos os valores ficam nas variáveis. */
 
 :root {
   --cor: #7d0e0e;
@@ -8,17 +8,17 @@
   --cor-brilho: rgba(125, 14, 14, 0.55);
   --cor-texto: #ec6b69;            /* a cor principal clareada, legível sobre o escuro */
 
-  --fundo: #07070a;
-  --texto: #f4f3f0;
-  --texto-2: rgba(244, 243, 240, 0.68);
-  --texto-3: rgba(244, 243, 240, 0.42);
-  --superficie: #111115;
-  --superficie-topo: #111115;
-  --borda: rgba(255, 255, 255, 0.1);
-  --borda-forte: rgba(255, 255, 255, 0.18);
-  --sombra: 0 30px 60px -30px rgba(0, 0, 0, 0.95);
-  --sombra-pilula: 0 10px 30px -12px rgba(0, 0, 0, 0.7);
-  --brilho-interno: 0 0 0 transparent;
+  --fundo: #1f1f21;
+  --texto: #cecfd2;
+  --texto-2: #a9abaf;
+  --texto-3: #96999e;
+  --superficie: #242528;
+  --superficie-topo: #2b2c2f;
+  --borda: #37383b;
+  --borda-forte: #4b4d52;
+  --sombra: 0 0 0 1px #bdbdbd1f, 0 8px 12px #0104045c, 0 0 1px 1px #01040480;   /* shadow.overlay */
+  --sombra-pilula: 0 1px 1px #01040480, 0 0 1px #01040480;                      /* shadow.raised */
+  --elevacao: 0 1px 1px #01040480, 0 0 1px #01040480;
 
   /* painel invertido (claro no tema escuro), para alternar o ritmo das etapas */
   --inv-fundo: #f2efe9;
@@ -29,8 +29,8 @@
   --inv-superficie: #e9e5de;
   --inv-cor-texto: #7d0e0e;
 
-  --raio: 22px;
-  --raio-grande: 32px;
+  --raio: 12px;          /* radius.xlarge */
+  --raio-grande: 12px;
   --fonte: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --fonte-titulo: "Inter Tight", "Inter", system-ui, sans-serif;
   --fonte-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
@@ -39,20 +39,20 @@
   color-scheme: dark;
 }
 
-/* Tema claro: papel quente, cartões brancos, o painel invertido fica escuro. */
+/* Tema claro: fundo cinza bem claro, cartões brancos, o painel invertido fica escuro. */
 [data-theme="claro"] {
   --cor-texto: #7d0e0e;
-  --fundo: #f5f2ed;
-  --texto: #121214;
-  --texto-2: rgba(18, 18, 20, 0.68);
-  --texto-3: rgba(18, 18, 20, 0.46);
+  --fundo: #f8f8f8;
+  --texto: #292a2e;
+  --texto-2: #505258;
+  --texto-3: #6b6e76;
   --superficie: #ffffff;
   --superficie-topo: #ffffff;
-  --borda: rgba(18, 18, 20, 0.08);
-  --borda-forte: rgba(18, 18, 20, 0.16);
-  --sombra: 0 30px 60px -32px rgba(80, 30, 20, 0.28);
-  --sombra-pilula: 0 10px 30px -14px rgba(80, 30, 20, 0.3);
-  --brilho-interno: 0 0 0 transparent;
+  --borda: #dddee1;
+  --borda-forte: #b7b9be;
+  --sombra: 0 8px 12px #1e1f2126, 0 0 1px #1e1f214f;
+  --sombra-pilula: 0 1px 1px #1e1f2140, 0 0 1px #1e1f214f;
+  --elevacao: 0 1px 1px #1e1f2140, 0 0 1px #1e1f214f;
   --inv-fundo: #141416;
   --inv-texto: #f4f3f0;
   --inv-texto-2: rgba(244, 243, 240, 0.7);
@@ -65,17 +65,17 @@
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
     --cor-texto: #7d0e0e;
-    --fundo: #f5f2ed;
-    --texto: #121214;
-    --texto-2: rgba(18, 18, 20, 0.68);
-    --texto-3: rgba(18, 18, 20, 0.46);
+    --fundo: #f8f8f8;
+    --texto: #292a2e;
+    --texto-2: #505258;
+    --texto-3: #6b6e76;
     --superficie: #ffffff;
     --superficie-topo: #ffffff;
-    --borda: rgba(18, 18, 20, 0.08);
-    --borda-forte: rgba(18, 18, 20, 0.16);
-    --sombra: 0 30px 60px -32px rgba(80, 30, 20, 0.28);
-    --sombra-pilula: 0 10px 30px -14px rgba(80, 30, 20, 0.3);
-    --brilho-interno: 0 0 0 transparent;
+    --borda: #dddee1;
+    --borda-forte: #b7b9be;
+    --sombra: 0 8px 12px #1e1f2126, 0 0 1px #1e1f214f;
+    --sombra-pilula: 0 1px 1px #1e1f2140, 0 0 1px #1e1f214f;
+    --elevacao: 0 1px 1px #1e1f2140, 0 0 1px #1e1f214f;
     --inv-fundo: #141416;
     --inv-texto: #f4f3f0;
     --inv-texto-2: rgba(244, 243, 240, 0.7);
@@ -110,7 +110,7 @@ p a:hover, li a:hover, .prose a:hover { text-decoration-color: var(--cor-texto);
 .pilula {
   display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px;
   border-radius: 999px; border: 1px solid var(--borda); background: var(--superficie-topo);
-  box-shadow: var(--sombra-pilula), var(--brilho-interno);
+  box-shadow: var(--sombra-pilula), var(--elevacao);
   color: var(--texto); font: 600 11px/1 var(--fonte); letter-spacing: 0.14em; text-transform: uppercase;
   cursor: pointer; transition: border-color var(--mov), transform var(--mov);
 }
@@ -143,8 +143,8 @@ p a:hover, li a:hover, .prose a:hover { text-decoration-color: var(--cor-texto);
 .etapas-menu { position: relative; }
 .menu {
   position: absolute; right: 0; top: calc(100% + 10px); min-width: 240px; padding: 8px;
-  border-radius: 18px; border: 1px solid var(--borda); background: var(--superficie-topo);
-  box-shadow: var(--sombra), var(--brilho-interno);
+  border-radius: var(--raio); border: 1px solid var(--borda); background: var(--superficie-topo);
+  box-shadow: var(--sombra), var(--elevacao);
 }
 .menu[hidden] { display: none; }
 .menu__item {
@@ -159,7 +159,7 @@ p a:hover, li a:hover, .prose a:hover { text-decoration-color: var(--cor-texto);
 .botao {
   display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 22px;
   border-radius: 999px; border: 1px solid var(--borda); background: var(--superficie);
-  box-shadow: var(--brilho-interno);
+  box-shadow: var(--elevacao);
   color: var(--texto); font: 600 15px/1 var(--fonte); cursor: pointer;
   transition: transform var(--mov), border-color var(--mov), background var(--mov), box-shadow var(--mov);
 }
@@ -181,7 +181,7 @@ main { display: block; }
   width: 100%; max-width: var(--largura); display: flex; flex-direction: column; align-items: flex-start; gap: 20px;
   padding: clamp(28px, 5vw, 72px); border-radius: var(--raio-grande);
   border: 1px solid var(--borda); background: var(--superficie);
-  box-shadow: var(--sombra), var(--brilho-interno);
+  box-shadow: var(--sombra), var(--elevacao);
 }
 /* Ritmo: uma etapa na superfície, a seguinte em painel invertido (claro no escuro, escuro no claro). */
 .etapa:not(.etapa--heroi):nth-of-type(odd) .etapa__corpo {
@@ -240,10 +240,10 @@ main { display: block; }
 .bloco {
   position: relative; display: flex; flex-direction: column; gap: 14px; min-width: 0; min-height: 210px;
   padding: 22px; border-radius: var(--raio); border: 1px solid var(--borda); background: var(--superficie);
-  box-shadow: var(--brilho-interno); color: var(--texto);
+  box-shadow: var(--elevacao); color: var(--texto);
   transition: transform var(--mov), border-color var(--mov), box-shadow var(--mov);
 }
-a.bloco:hover { transform: translateY(-4px); border-color: var(--borda-forte); box-shadow: var(--sombra), var(--brilho-interno), 0 0 0 1px var(--cor-brilho); }
+a.bloco:hover { transform: translateY(-4px); border-color: var(--borda-forte); box-shadow: var(--sombra), var(--elevacao), 0 0 0 1px var(--cor-brilho); }
 .bloco__num { font: 500 12px/1 var(--fonte-mono); color: var(--cor-texto); }
 .bloco__nome { margin: 0; font: 700 23px/1.15 var(--fonte-titulo); letter-spacing: -0.03em; }
 .bloco__texto { flex: 1 1 auto; color: var(--texto-2); font-size: 15px; }
@@ -268,7 +268,7 @@ a.bloco:hover { transform: translateY(-4px); border-color: var(--borda-forte); b
 .lista-notas .mono { color: var(--texto-3); font-size: 13px; white-space: nowrap; }
 .prose { max-width: 760px; }
 .prose h2, .prose h3 { font-family: var(--fonte-titulo); letter-spacing: -0.03em; margin: 32px 0 8px; }
-.prose pre { overflow: auto; padding: 16px; border-radius: 14px; border: 1px solid var(--borda); background: var(--superficie); }
+.prose pre { overflow: auto; padding: 16px; border-radius: 8px; border: 1px solid var(--borda); background: var(--superficie); }
 
 /* Rodapé */
 .rodape {
@@ -295,10 +295,10 @@ body.hub { height: 100vh; height: 100svh; display: flex; flex-direction: column;
 .cartao {
   position: relative; display: flex; flex-direction: column; gap: 8px; min-width: 0; min-height: 0; overflow: hidden;
   padding: clamp(16px, 2vw, 24px); border-radius: var(--raio); border: 1px solid var(--borda); background: var(--superficie);
-  box-shadow: var(--brilho-interno);
+  box-shadow: var(--elevacao);
   transition: transform var(--mov), border-color var(--mov), box-shadow var(--mov);
 }
-.cartao:has(.cartao__alvo:hover) { transform: translateY(-3px); border-color: var(--borda-forte); box-shadow: var(--sombra), var(--brilho-interno), 0 0 0 1px var(--cor-brilho); }
+.cartao:has(.cartao__alvo:hover) { transform: translateY(-3px); border-color: var(--borda-forte); box-shadow: var(--sombra), var(--elevacao), 0 0 0 1px var(--cor-brilho); }
 .cartao__alvo { position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
 .cartao__alvo:focus-visible { outline: 2px solid var(--cor-texto); outline-offset: 2px; }
 .cartao__num { font-size: 12px; color: var(--cor-texto); }
@@ -359,7 +359,7 @@ body.hub { height: 100vh; height: 100svh; display: flex; flex-direction: column;
   .pilula { height: 36px; padding: 0 12px; }
   .pilula--icone { width: 36px; padding: 0; }
   .etapa { padding: 88px 12px 96px; }
-  .etapa__corpo { border-radius: 26px; }
+  .etapa__corpo { border-radius: var(--raio-grande); }
   .blocos, .blocos--downloads { grid-template-columns: 1fr; }
   .acao { left: 16px; right: 16px; bottom: 16px; justify-content: center; }
 }
