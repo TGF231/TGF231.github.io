@@ -22,9 +22,9 @@ dist/                   saída do build (não versionada)
 
 ## Páginas
 
-- **`/`**: uma etapa de tela cheia por projeto (ordem em `projetos.ordem`), mais Notas,
-  Sobre e Contato. A etapa 00 tem os blocos do índice; o bloco com `abrirDireto`
-  (o MeUsMe) abre o aplicativo em vez de ir à etapa.
+- **`/`**: hub de uma tela, sem rolar. Um cartão por projeto (ordem em
+  `projetos.ordem`, o primeiro em destaque), mais Downloads, Notas e uma faixa de
+  Contato. Privados entram por `projetos.manuais`, com o texto de `projetos.textos`.
 - **`/downloads/`**: um bloco por repositório de `downloads.repos` que tenha release
   publicado, sempre o mais recente (rascunho e pré-lançamento ficam de fora). Os
   nomes dos arquivos viram rótulos por `downloads.rotulos`; `downloads.ocultar` tira
