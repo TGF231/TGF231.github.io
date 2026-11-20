@@ -8,8 +8,8 @@ o GitHub Actions publica o resultado no Pages.
 
 ```
 site.config.json        toda a configuração (textos, ordem dos projetos, downloads, botão Entrar)
-templates/base.html     o esqueleto de todas as páginas: topo flutuante, fundo em malha, rodapé
-assets/css/site.css     o visual em vidro, temas claro e escuro; a cor principal é --cor (#7D0E0E)
+templates/base.html     o esqueleto de todas as páginas: topo flutuante e rodapé
+assets/css/site.css     o visual (superfícies chapadas, temas claro e escuro); a cor principal é --cor (#7D0E0E)
 assets/js/app.js        troca de tema claro e escuro
 content/posts/*.md      notas (Markdown com front matter)
 static/                 arquivos copiados crus para a raiz do site (sw.js)
