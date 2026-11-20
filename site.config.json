@@ -5,7 +5,7 @@
   "title": "Thiago Gomes",
   "kicker": "Portfólio",
   "description": "Transformo dados em decisões e construo as ferramentas que faltam — de SQL e Firebird a Python e C++. Os repositórios abaixo se atualizam sozinhos, direto do meu GitHub.",
-  "url": "https://tgf231.github.io",
+  "url": "https://megstation.com",
   "lang": "pt-BR",
   "email": "tgf231.dev@gmail.com",
   "about": {
@@ -17,8 +17,44 @@
     "text": "Aberto a projetos, colaborações e boas conversas sobre dados e software."
   },
   "skills": ["Python", "SQL", "Firebird", "C++", "JavaScript", "VBA (Excel)"],
+  "projetos": {
+    "comment": "Cada projeto vira uma etapa da página, nesta ordem; os que não estão na lista entram depois, pelo último push. 'textos' sobrepõe o que vem do GitHub. 'abrirDireto': o bloco do índice abre a page do projeto em vez de ir à etapa.",
+    "ordem": ["MeUsMe", "Backup_Maximus", "Eagle_conta_estoque"],
+    "textos": {
+      "MeUsMe": {
+        "descricao": "Programa de organização de tarefas: captura rápida, um passo por vez, agenda e finanças no mesmo lugar. Funciona no navegador, no celular e no Windows, com os dados guardados no próprio aparelho.",
+        "abrir": "Abrir aplicativo",
+        "abrirDireto": true
+      },
+      "Backup_Maximus": {
+        "titulo": "Backup Maximus",
+        "documentacao": "https://tgf231.github.io/backup-maximus-docs/"
+      },
+      "Eagle_conta_estoque": {
+        "titulo": "Eagle Contagem de Estoque"
+      }
+    }
+  },
+  "downloads": {
+    "comment": "Página /downloads/: um bloco por projeto com release publicado, sempre o mais recente (lido no build, que roda todo dia). Repositório privado só entra quando houver um jeito público de baixar (ver 'privados').",
+    "repos": ["MeUsMe", "Backup_Maximus", "Eagle_conta_estoque"],
+    "rotulos": {
+      "android.apk": "Android (APK)",
+      "android-play.aab": "Android (Play Store, AAB)",
+      "windows-x64-setup.exe": "Windows (instalador)",
+      "instalador.exe": "Windows (instalador)",
+      "pasta.zip": "Windows (pasta portátil, ZIP)",
+      ".exe": "Windows (executável)"
+    },
+    "ocultar": ["SHA256SUMS.txt", "THIRD-PARTY-LICENSES.txt", ".aab"]
+  },
+  "central": {
+    "comment": "Botão pequeno no canto superior direito. Leva ao painel do NodeMCU, que liga o PC e abre a central de desenvolvimento.",
+    "rotulo": "Entrar",
+    "url": "http://pc.megstation.com/"
+  },
   "repos": {
-    "exclude": ["TGF231.github.io", "Home-Page"],
+    "exclude": ["TGF231.github.io", "Home-Page", "TGF231", "backup-maximus-docs"],
     "includeForks": false,
     "includeArchived": true
   },

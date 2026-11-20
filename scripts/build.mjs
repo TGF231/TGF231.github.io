@@ -1,13 +1,14 @@
 // Build do site estático. Node 20+, zero dependências.
 // Uso: node scripts/build.mjs   (saída em dist/)
 //
-// O visual vem do design "Portfolio with GitHub repos" (design system Nocturne).
-// A diferença em relação ao design original: lá os repositórios eram buscados
-// no navegador a cada visita; aqui eles são buscados no build e viram HTML.
+// O visual é o MegUI (assets/megui/, gerado pelo design system; não editar à mão).
+// A página inicial é uma sequência de etapas de tela cheia, uma por projeto, com
+// índice em blocos, contador e menu de etapas na barra de título. Repositórios e
+// releases são buscados no build e viram HTML; o build roda todo dia.
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { fetchRepos, fetchProfileReadme, hasToken } from "./github.mjs";
+import { fetchRepos, fetchProfileReadme, fetchReleases, hasToken } from "./github.mjs";
 import { renderMarkdown, parseFrontMatter } from "./markdown.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -47,83 +48,92 @@ function relTime(iso) {
   return y === 1 ? "há 1 ano" : `há ${y} anos`;
 }
 
-// Cores de linguagem do GitHub, como no design.
-const LANG_COLORS = {
-  Python: "#3572A5", JavaScript: "#f1e05e", TypeScript: "#3178c6",
-  "C++": "#f34b7d", C: "#555555", "C#": "#178600", Java: "#b07219",
-  HTML: "#e34c26", CSS: "#563d7c", Shell: "#89e051", Go: "#00ADD8",
-  Rust: "#dea584", Ruby: "#701516", PHP: "#4F5D95", Vue: "#41b883",
-  "Jupyter Notebook": "#DA5B0B", SQL: "#e38c00", PLpgSQL: "#336790",
-  Dockerfile: "#384d54", Kotlin: "#A97BFF", Swift: "#F05138",
-  Batchfile: "#C1F12E", PowerShell: "#012456", VBA: "#867db1",
-  "Visual Basic .NET": "#945db7", TeX: "#3D6117", R: "#198CE7",
-  Makefile: "#427819", Assembly: "#6E4C13"
+// Ícones Lucide (MIT), traço 1,5 e currentColor, como pede o MegUI. Sempre com rótulo ao lado.
+const ICONES = {
+  baixo: '<path d="m6 9 6 6 6-6"/>',
+  cima: '<path d="m18 15-6-6-6 6"/>',
+  abrir: '<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
+  entrar: '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/>',
+  lista: '<path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/>',
+  codigo: '<path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/>',
+  baixar: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
+  email: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  livro: '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
+  notas: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>'
 };
-const langColor = (lang) => LANG_COLORS[lang] || "var(--color-neutral-500)";
+const icone = (nome, tam = 16) =>
+  `<svg class="mg-icone" width="${tam}" height="${tam}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[nome]}</svg>`;
 
-const ARROW = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>';
-const STAR = '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.6 1.6 6.8L12 17.3 5.8 20.9 7.4 14 2.2 9.5l6.9-.6z"/></svg>';
+const dois = (n) => String(n).padStart(2, "0");
 
 function template(tpl, vars) {
   return tpl.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ""));
 }
 
-function repoCard(repo, { featured = false, index = 0 } = {}) {
-  const href = repo.pagesUrl || repo.url || repo.homepage;
-  const meta = [];
-  if (repo.language) {
-    meta.push(
-      `<span><span class="lang-dot" style="background:${esc(langColor(repo.language))}"></span>${esc(repo.language)}</span>`
-    );
-  }
-  if (repo.stars) meta.push(`<span>${STAR}${repo.stars}</span>`);
-  meta.push(`<span title="${esc(repo.updatedAt || "")}">${esc(relTime(repo.updatedAt))}</span>`);
-
-  const badges = [];
-  if (repo.visibility === "private") badges.push('<span class="tag tag-outline">privado</span>');
-  if (repo.hasPages) badges.push('<span class="tag tag-accent">page</span>');
-  if (repo.archived) badges.push('<span class="tag tag-neutral">arquivado</span>');
-
-  const top = featured
-    ? `<div class="repo-top">
-      <span class="repo-num">${String(index + 1).padStart(2, "0")}</span>
-      <span class="repo-arrow">${ARROW}</span>
-    </div>
-    <div class="repo-name">${esc(repo.name)}</div>`
-    : `<div class="repo-top">
-      <span class="repo-name">${esc(repo.name)}</span>
-      <span class="repo-arrow">${ARROW}</span>
-    </div>`;
-
-  const attrs = [
-    `class="repo-card"`,
-    `data-name="${esc(repo.name.toLowerCase())}"`,
-    `data-lang="${esc((repo.language || "").toLowerCase())}"`,
-    `data-pages="${repo.hasPages ? "1" : "0"}"`,
-    `data-topics="${esc((repo.topics || []).join(" ").toLowerCase())}"`
-  ].join(" ");
-
-  const inner = `${top}
-    <p class="repo-desc">${esc(repo.description || "Sem descrição.")}</p>
-    ${badges.length ? `<div class="repo-tags">${badges.join("")}</div>` : ""}
-    <div class="repo-meta">${meta.join("")}</div>`;
-
-  // Repositório privado não tem link público — vira card estático.
-  return href
-    ? `<a ${attrs} href="${esc(href)}" target="_blank" rel="noopener">${inner}</a>`
-    : `<div ${attrs}>${inner}</div>`;
+// Tamanho de arquivo no formato brasileiro, sempre com unidade: "3,3 MB".
+function tamanho(bytes) {
+  const mb = bytes / 1048576;
+  if (mb >= 1) return `${mb.toLocaleString("pt-BR", { maximumFractionDigits: 1 })} MB`;
+  return `${Math.max(1, Math.round(bytes / 1024)).toLocaleString("pt-BR")} KB`;
 }
 
-// Escolhe quais repositórios ganham a seção "Projetos em destaque".
-// Recebe a lista já ordenada por data de push e devolve um subconjunto dela.
-// Array vazio esconde a seção inteira — é o estado atual, a pedido.
-//
-// Para ligar depois, basta devolver algo. Ex.:
-//   por tópico no GitHub:  return repos.filter((r) => r.topics.includes("destaque"));
-//   por lista no config:   return repos.filter((r) => (config.featured || []).includes(r.name));
-//   os N mais recentes:    return repos.slice(0, 3);
-function selectFeatured(repos, config) {
-  return [];
+// Projetos na ordem do site.config.json; os que não estão na lista vêm depois, pelo último push.
+function ordenarProjetos(repos, config) {
+  const ordem = config.projetos?.ordem || [];
+  const pos = (r) => (ordem.includes(r.name) ? ordem.indexOf(r.name) : ordem.length);
+  return [...repos].sort((a, b) => pos(a) - pos(b) || new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
+}
+
+// O que vem do GitHub, com os textos do site.config.json por cima.
+function projeto(repo, config, releases) {
+  const t = config.projetos?.textos?.[repo.name] || {};
+  return {
+    id: repo.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+    repo: repo.name,
+    titulo: t.titulo || repo.name.replace(/_/g, " "),
+    descricao: t.descricao || repo.description || "",
+    linguagem: repo.language,
+    atualizado: repo.updatedAt,
+    app: repo.pagesUrl || repo.homepage || null,
+    rotuloApp: t.abrir || "Abrir página",
+    abrirDireto: Boolean(t.abrirDireto && (repo.pagesUrl || repo.homepage)),
+    codigo: repo.url,
+    documentacao: t.documentacao || null,
+    release: releases.find((r) => r.repo === repo.name) || null
+  };
+}
+
+// Um bloco do índice. O MeUsMe (abrirDireto) abre o aplicativo; os outros levam à própria etapa.
+function bloco({ num, nome, texto, href, rotulo, iconeNome, externo = false }) {
+  return `<a class="bloco" href="${esc(href)}"${externo ? ' target="_blank" rel="noopener"' : ""}>
+      <span class="bloco__num mg-mono">${num}</span>
+      <span class="bloco__nome">${esc(nome)}</span>
+      ${texto ? `<span class="bloco__texto">${esc(texto)}</span>` : ""}
+      <span class="bloco__pe"><span>${esc(rotulo)}</span>${icone(iconeNome)}</span>
+    </a>`;
+}
+
+// Uma etapa de tela cheia. A barra de título mostra o nome dela enquanto estiver na tela.
+function etapa({ id, num, marca, titulo, html }) {
+  return `<section class="etapa" id="${id}" data-titulo="${esc(titulo)}" aria-labelledby="${id}-titulo">
+  <div class="etapa__corpo">
+    <p class="mg-rotulo mg-rotulo--secao etapa__marca"><span class="mg-mono">${num}</span> · ${esc(marca)}</p>
+${html}
+  </div>
+</section>`;
+}
+
+function botao(href, texto, iconeNome, externo = true) {
+  return `<a class="mg-botao" href="${esc(href)}"${externo ? ' target="_blank" rel="noopener"' : ""}>${icone(iconeNome)}<span>${esc(texto)}</span></a>`;
+}
+
+// Arquivos de um release: rótulo legível pelo fim do nome, os de apoio (somas, licenças, AAB) ficam de fora.
+function arquivosDoRelease(release, config) {
+  const ocultar = config.downloads?.ocultar || [];
+  const rotulos = Object.entries(config.downloads?.rotulos || {});
+  return release.arquivos
+    .filter((a) => !ocultar.some((o) => a.nome.endsWith(o)))
+    .map((a) => ({ ...a, rotulo: (rotulos.find(([fim]) => a.nome.endsWith(fim)) || [null, a.nome])[1] }));
 }
 
 async function readPosts() {
@@ -196,158 +206,210 @@ async function main() {
     console.warn("README de perfil não carregado:", err.message);
   }
 
+  let releases = [];
+  try {
+    releases = await fetchReleases(config);
+  } catch (err) {
+    console.warn("Releases não carregados:", err.message);
+  }
+
   const posts = await readPosts();
-  const featured = (selectFeatured(repos, config) || []).filter(Boolean);
-  const publicCount = repos.filter((r) => r.visibility !== "private").length;
+  const projetos = ordenarProjetos(repos, config).map((r) => projeto(r, config, releases));
+  const hoje = fmtDate(new Date().toISOString(), config.lang);
+  const central = config.central || {};
 
-  const navlinks = `<a href="/#repos">Repositórios</a>
-  ${posts.length ? '<a href="/notas/">Notas</a>' : ""}
-  <a href="/#sobre">Sobre</a>
-  <a href="/#contato">Contato</a>`;
-
-  const contactSection = `<section id="contato" class="contact">
-  <div class="contact-inner">
-    <div class="kicker">Contato</div>
-    <h2>${esc(config.contact.heading)}</h2>
-    <p>${esc(config.contact.text)}</p>
-    <div class="contact-actions">
-      <a class="btn btn-primary" href="mailto:${esc(config.email)}">${esc(config.email)}</a>
-      <a class="btn btn-secondary" href="${esc(profileUrl)}" target="_blank" rel="noopener">github.com/${esc(config.user)}</a>
-      <a class="btn btn-secondary" href="${esc(config.url)}">${esc(config.url.replace(/^https?:\/\//, ""))}</a>
-    </div>
-  </div>
-</section>`;
-
-  const page = (vars) =>
+  const page = ({ contexto, marca = "", menu = "", acao = "", body, ...vars }) =>
     template(base, {
       lang: config.lang,
       brand: esc(config.name),
-      navlinks,
-      profileUrl: esc(profileUrl),
+      contexto: esc(contexto),
+      marca,
+      menu,
+      acao,
+      rolavel: acao ? "mg-janela__rolavel mg-janela__rolavel--com-acao" : "mg-janela__rolavel",
+      body,
+      centralUrl: esc(central.url || `https://github.com/${config.user}`),
+      centralRotulo: esc(central.rotulo || "Entrar"),
+      iconeEntrar: icone("entrar", 14),
+      rodapeEstado: `Atualizado do GitHub em ${esc(hoje)}`,
+      rodapeContagem: `${projetos.length} ${projetos.length === 1 ? "projeto" : "projetos"} · ${releases.length} ${releases.length === 1 ? "download" : "downloads"}`,
       year: String(new Date().getFullYear()),
-      updated: new Date().toISOString(),
-      updatedLabel: fmtDate(new Date().toISOString(), config.lang),
       ...vars
     });
 
-  // ---------------- home ----------------
-  const indexBody = `
-<section class="hero">
-  <div class="kicker">${esc(config.kicker)}</div>
-  <h1>${esc(config.name)}</h1>
-  <p class="hero-role">${esc(config.role)}</p>
-  <p class="hero-lede">${esc(config.description)}</p>
-  <div class="hero-actions">
-    <a class="btn btn-primary" href="#repos">Ver projetos</a>
-    <a class="btn btn-secondary" href="#contato">Contato</a>
-  </div>
-</section>
+  // ---------------- home: etapas ----------------
+  const etapas = [];
 
-${featured.length
-    ? `<section id="projetos" class="section">
-  <div class="section-head">
-    <div class="kicker">Projetos em destaque</div>
-    <span class="section-note">Selecionados manualmente</span>
-  </div>
-  <div class="repo-grid grid-featured">
-${featured.map((r, i) => repoCard(r, { featured: true, index: i })).join("\n")}
-  </div>
-</section>`
-    : ""}
+  // Os blocos do índice são montados depois, quando todas as etapas existem.
+  etapas.push({ id: "inicio", titulo: "Início", marca: config.kicker, html: null });
 
-<section id="repos" class="section">
-  <div class="section-head">
-    <div class="kicker">Todos os repositórios</div>
-    <span class="section-note">${publicCount} ${publicCount === 1 ? "público" : "públicos"} · atualizado do GitHub</span>
-  </div>
-  <div class="filters" style="margin-bottom:20px;">
-    <input type="search" id="q" class="input" placeholder="filtrar por nome, tópico…" aria-label="Filtrar repositórios">
-    <select id="lang" class="input" aria-label="Filtrar por linguagem">
-      <option value="">todas as linguagens</option>
-      ${[...new Set(repos.map((r) => r.language).filter(Boolean))]
-        .sort()
-        .map((l) => `<option value="${esc(l.toLowerCase())}">${esc(l)}</option>`)
+  for (const p of projetos) {
+    const ficha = [p.linguagem, p.atualizado && `atualizado ${relTime(p.atualizado)}`, p.release && `versão ${p.release.tag}`]
+      .filter(Boolean)
+      .map(esc)
+      .join(" · ");
+    const acoes = [
+      p.app && botao(p.app, p.rotuloApp, "abrir"),
+      p.release && botao(`/downloads/#${p.id}`, `Baixar ${p.release.tag}`, "baixar", false),
+      p.documentacao && botao(p.documentacao, "Documentação", "livro"),
+      p.codigo && botao(p.codigo, "Ver código", "codigo")
+    ].filter(Boolean);
+    etapas.push({
+      id: p.id,
+      titulo: p.titulo,
+      marca: "Projeto",
+      projeto: p,
+      html: `    <h2 class="mg-rotulo mg-rotulo--destaque" id="${p.id}-titulo">${esc(p.titulo)}</h2>
+    ${p.descricao ? `<p class="etapa__texto">${esc(p.descricao)}</p>` : ""}
+    ${ficha ? `<p class="mg-rotulo mg-rotulo--info">${ficha}</p>` : ""}
+    ${acoes.length ? `<div class="etapa__acoes">${acoes.join("")}</div>` : ""}`
+    });
+  }
+
+  if (posts.length) {
+    etapas.push({
+      id: "notas",
+      titulo: "Notas",
+      marca: "Notas",
+      html: `    <h2 class="mg-rotulo mg-rotulo--destaque" id="notas-titulo">Anotações técnicas</h2>
+    <ul class="lista-notas">
+      ${posts
+        .slice(0, 5)
+        .map((post) => `<li><a href="/notas/${esc(post.slug)}/">${esc(post.title)}</a><span class="mg-mono">${esc(fmtDate(post.date, config.lang))}</span></li>`)
         .join("")}
-    </select>
-    <label class="check"><input type="checkbox" id="only-pages"> só com page</label>
-  </div>
-  <div class="repo-grid" id="repo-grid">
-${repos.map((r) => repoCard(r)).join("\n")}
-  </div>
-  <p class="empty" id="no-results" hidden>Nenhum repositório corresponde ao filtro.</p>
-</section>
+    </ul>
+    <div class="etapa__acoes">${botao("/notas/", "Todas as notas", "notas", false)}</div>`
+    });
+  }
 
-${posts.length
-    ? `<hr class="hr">
-<section id="notas" class="section">
-  <div class="section-head">
-    <div class="kicker">Notas</div>
-    <a class="section-note" href="/notas/">ver todas</a>
-  </div>
-  <ul class="post-list">
-    ${posts
-      .slice(0, 5)
-      .map(
-        (post) =>
-          `<li><a href="/notas/${esc(post.slug)}/">${esc(post.title)}</a><span class="when">${esc(fmtDate(post.date, config.lang))}</span></li>`
-      )
-      .join("")}
-  </ul>
-</section>`
-    : ""}
+  etapas.push({
+    id: "sobre",
+    titulo: "Sobre",
+    marca: "Sobre",
+    html: `    <h2 class="mg-rotulo mg-rotulo--destaque" id="sobre-titulo">${esc(config.about.heading)}</h2>
+    ${readmeHtml ? `<div class="prose">${readmeHtml}</div>` : `<p class="etapa__texto">${esc(config.about.text)}</p>`}
+    <div class="etiquetas">${(config.skills || []).map((s) => `<span class="etiqueta">${esc(s)}</span>`).join("")}</div>`
+  });
 
-<hr class="hr">
+  etapas.push({
+    id: "contato",
+    titulo: "Contato",
+    marca: "Contato",
+    html: `    <h2 class="mg-rotulo mg-rotulo--destaque" id="contato-titulo">${esc(config.contact.heading)}</h2>
+    <p class="etapa__texto">${esc(config.contact.text)}</p>
+    <div class="etapa__acoes">
+      ${botao(`mailto:${config.email}`, config.email, "email", false)}
+      ${botao(profileUrl, `github.com/${config.user}`, "codigo")}
+    </div>`
+  });
 
-<section id="sobre" class="section">
-  <div class="about-grid">
-    <div>
-      <div class="kicker">Sobre</div>
-      <h2>${esc(config.about.heading)}</h2>
+  etapas.forEach((e, i) => (e.num = dois(i)));
+  const ultima = dois(etapas.length - 1);
+
+  const blocos = etapas
+    .slice(1)
+    .map((e) =>
+      e.projeto?.abrirDireto
+        ? bloco({ num: e.num, nome: e.titulo, texto: e.projeto.descricao, href: e.projeto.app, rotulo: e.projeto.rotuloApp, iconeNome: "abrir", externo: true })
+        : bloco({ num: e.num, nome: e.titulo, texto: e.projeto?.descricao, href: `#${e.id}`, rotulo: "Ver", iconeNome: "baixo" })
+    );
+  if (releases.length) {
+    blocos.push(
+      bloco({ num: "DL", nome: "Downloads", texto: "Instaladores e versões mais recentes de cada programa.", href: "/downloads/", rotulo: "Abrir downloads", iconeNome: "baixar" })
+    );
+  }
+
+  etapas[0].html = `    <h1 class="mg-rotulo mg-rotulo--destaque" id="inicio-titulo">${esc(config.name)}</h1>
+    <p class="mg-rotulo mg-rotulo--titulo etapa__papel">${esc(config.role)}</p>
+    <p class="etapa__texto">${esc(config.description)}</p>
+    <div class="blocos">
+    ${blocos.join("\n    ")}
+    </div>`;
+
+  const menuEtapas = `<div class="etapas-menu">
+    <button type="button" class="mg-botao mg-botao--compacta" id="etapas-botao" aria-haspopup="menu" aria-expanded="false" aria-controls="etapas-lista">${icone("lista", 14)}<span>Etapas</span></button>
+    <div class="mg-menu etapas-menu__lista" id="etapas-lista" role="menu" hidden>
+      ${etapas.map((e) => `<a class="mg-menu__item" role="menuitem" href="#${e.id}"><span>${esc(e.titulo)}</span><span class="mg-menu__atalho">${e.num}</span></a>`).join("\n      ")}
+      ${releases.length ? `<div class="mg-menu__separador" role="separator"></div>
+      <a class="mg-menu__item" role="menuitem" href="/downloads/"><span>Downloads</span><span class="mg-menu__atalho">${releases.length} ${releases.length === 1 ? "programa" : "programas"}</span></a>` : ""}
     </div>
-    <div>
-      ${readmeHtml ? `<div class="prose">${readmeHtml}</div>` : `<p class="about-text">${esc(config.about.text)}</p>`}
-    </div>
-  </div>
-</section>
-
-<section id="stack" class="section" style="padding-top:0;">
-  <div class="kicker" style="margin-bottom:22px;">Stack</div>
-  <div class="stack-list">
-    ${(config.skills || []).map((s) => `<span class="tag tag-neutral">${esc(s)}</span>`).join("")}
-  </div>
-</section>
-
-${contactSection}
-`;
+  </div>`;
 
   await write(
     "index.html",
     page({
-      title: `${esc(config.name)} — ${esc(config.role)}`,
+      title: `${esc(config.name)} · ${esc(config.role)}`,
       description: esc(config.description),
       canonical: esc(config.url),
-      body: indexBody
+      contexto: "Início",
+      marca: `<span class="mg-barra-titulo__marca mg-mono" id="contador">00 / ${ultima}</span>`,
+      menu: menuEtapas,
+      acao: `<button type="button" class="mg-acao-primaria" id="proxima">${icone("baixo", 20)}<span>Próxima etapa</span></button>`,
+      body: etapas.map(etapa).join("\n\n")
     })
   );
 
+  // ---------------- downloads ----------------
+  if (releases.length) {
+    const ordem = projetos.map((p) => p.repo);
+    const posicao = (r) => (ordem.includes(r.repo) ? ordem.indexOf(r.repo) : ordem.length);
+    const lista = [...releases].sort((a, b) => posicao(a) - posicao(b));
+    const blocosDownload = lista.map((r, i) => {
+      const p = projetos.find((x) => x.repo === r.repo);
+      const id = p?.id || r.repo.toLowerCase();
+      const arquivos = arquivosDoRelease(r, config);
+      return `<section class="bloco bloco--download" id="${id}" aria-labelledby="${id}-titulo">
+      <span class="bloco__num mg-mono">${dois(i + 1)}</span>
+      <h2 class="bloco__nome" id="${id}-titulo">${esc(p?.titulo || r.repo)}</h2>
+      <span class="mg-rotulo mg-rotulo--info">Versão <span class="mg-mono">${esc(r.tag)}</span> · publicada em ${esc(fmtDate(r.publicadoEm, config.lang))}</span>
+      <div class="arquivos">
+        ${arquivos
+          .map((a) => `<a class="mg-botao arquivo" href="${esc(a.url)}" download>${icone("baixar")}<span class="arquivo__rotulo">${esc(a.rotulo)}</span><span class="arquivo__tamanho mg-mono">${tamanho(a.tamanho)}</span></a>`)
+          .join("\n        ")}
+      </div>
+      <span class="bloco__pe"><a href="${esc(r.pagina)}" target="_blank" rel="noopener">Notas da versão ${esc(r.tag)}</a></span>
+    </section>`;
+    });
+    await write(
+      "downloads/index.html",
+      page({
+        title: `Downloads · ${esc(config.name)}`,
+        description: "Instaladores e versões mais recentes de cada programa.",
+        canonical: `${esc(config.url)}/downloads/`,
+        contexto: "Downloads",
+        marca: `<span class="mg-barra-titulo__marca mg-mono">${lista.length} ${lista.length === 1 ? "programa" : "programas"}</span>`,
+        body: `<section class="etapa etapa--livre" aria-labelledby="downloads-titulo">
+  <div class="etapa__corpo">
+    <p class="mg-rotulo mg-rotulo--secao etapa__marca"><a href="/">Início</a> · Downloads</p>
+    <h1 class="mg-rotulo mg-rotulo--destaque" id="downloads-titulo">Versões mais recentes</h1>
+    <p class="etapa__texto">Cada bloco aponta para o último release publicado no GitHub de cada programa. A lista é conferida todo dia.</p>
+    <div class="blocos blocos--downloads">
+    ${blocosDownload.join("\n    ")}
+    </div>
+  </div>
+</section>`
+      })
+    );
+  }
+
   // ---------------- notas ----------------
   if (posts.length) {
+    const listaNotas = `<ul class="lista-notas">
+    ${posts.map((post) => `<li><a href="/notas/${esc(post.slug)}/">${esc(post.title)}</a><span class="mg-mono">${esc(fmtDate(post.date, config.lang))}</span></li>`).join("")}
+  </ul>`;
     await write(
       "notas/index.html",
       page({
         title: `Notas · ${esc(config.name)}`,
         description: "Notas e anotações técnicas.",
         canonical: `${esc(config.url)}/notas/`,
-        body: `<section class="section" style="padding-top:clamp(40px,7vw,80px);">
-  <div class="kicker" style="margin-bottom:26px;">Notas</div>
-  <ul class="post-list">
-    ${posts
-      .map(
-        (post) =>
-          `<li><a href="/notas/${esc(post.slug)}/">${esc(post.title)}</a><span class="when">${esc(fmtDate(post.date, config.lang))}</span></li>`
-      )
-      .join("")}
-  </ul>
+        contexto: "Notas",
+        body: `<section class="etapa etapa--livre" aria-labelledby="notas-titulo">
+  <div class="etapa__corpo">
+    <p class="mg-rotulo mg-rotulo--secao etapa__marca"><a href="/">Início</a> · Notas</p>
+    <h1 class="mg-rotulo mg-rotulo--destaque" id="notas-titulo">Anotações técnicas</h1>
+    ${listaNotas}
+  </div>
 </section>`
       })
     );
@@ -359,13 +421,13 @@ ${contactSection}
           title: `${esc(post.title)} · ${esc(config.name)}`,
           description: esc(post.summary),
           canonical: `${esc(config.url)}/notas/${esc(post.slug)}/`,
-          body: `<article class="section prose" style="padding-top:clamp(40px,7vw,80px);">
-  <header class="post-head">
-    <h1>${esc(post.title)}</h1>
-    <p class="when">${esc(fmtDate(post.date, config.lang))}</p>
-  </header>
-  ${post.html}
-  <p class="back"><a href="/notas/">← todas as notas</a></p>
+          contexto: post.title,
+          body: `<article class="etapa etapa--livre" aria-labelledby="nota-titulo">
+  <div class="etapa__corpo prose">
+    <p class="mg-rotulo mg-rotulo--secao etapa__marca"><a href="/notas/">Notas</a> · <span class="mg-mono">${esc(fmtDate(post.date, config.lang))}</span></p>
+    <h1 class="mg-rotulo mg-rotulo--destaque" id="nota-titulo">${esc(post.title)}</h1>
+    ${post.html}
+  </div>
 </article>`
         })
       );
@@ -406,7 +468,7 @@ ${contactSection}
   }
   await write(".nojekyll", "");
 
-  const urls = ["/", ...(posts.length ? ["/notas/", ...posts.map((post) => `/notas/${post.slug}/`)] : [])];
+  const urls = ["/", ...(releases.length ? ["/downloads/"] : []), ...(posts.length ? ["/notas/", ...posts.map((post) => `/notas/${post.slug}/`)] : [])];
   await write(
     "sitemap.xml",
     `<?xml version="1.0" encoding="UTF-8"?>
@@ -418,7 +480,7 @@ ${urls.map((u) => `  <url><loc>${config.url}${u}</loc></url>`).join("\n")}
   await write("robots.txt", `User-agent: *\nAllow: /\nSitemap: ${config.url}/sitemap.xml\n`);
 
   console.log(
-    `OK: ${repos.length} repositórios (${featured.length} em destaque), ${posts.length} notas -> dist/`
+    `OK: ${projetos.length} projetos, ${releases.length} downloads, ${posts.length} notas -> dist/`
   );
 }
 
