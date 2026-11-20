@@ -1,0 +1,215 @@
+/* GERADO por gerar/gerar_tema.py — não editar à mão.
+   Tema: data-theme="claro|escuro" (ou data-tema) no <html>; sem atributo, segue o sistema.
+   As fontes ficam em fonts/ ao lado deste arquivo (OFL) — funciona offline (Tauri, intranet). */
+
+@font-face { font-family: "Atkinson Hyperlegible Next"; font-style: normal; font-weight: 400; font-display: swap;
+  src: url("fonts/AtkinsonHyperlegibleNext-400.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Next"; font-style: normal; font-weight: 700; font-display: swap;
+  src: url("fonts/AtkinsonHyperlegibleNext-700.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Mono"; font-style: normal; font-weight: 400; font-display: swap;
+  src: url("fonts/AtkinsonHyperlegibleMono-400.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Mono"; font-style: normal; font-weight: 700; font-display: swap;
+  src: url("fonts/AtkinsonHyperlegibleMono-700.woff2") format("woff2"); }
+
+:root, [data-theme="claro"], [data-tema="claro"] {
+  --megui-bg: #F4F6F8;
+  --megui-surface: #FFFFFF;
+  --megui-surface-2: #E9EDF1;
+  --megui-sunken: #FBFCFD;
+  --megui-linha-alt: #F7F9FB;
+  --megui-somente-leitura: #EFF2F5;
+  --megui-ink: #16202A;
+  --megui-ink-2: #4A5A6A;
+  --megui-ink-3: #5B6974;
+  --megui-border: #D2DAE2;
+  --megui-border-2: #BAC5D0;
+  --megui-accent: #7D0E0E;
+  --megui-accent-hover: #5C0A0A;
+  --megui-accent-linha: #7D0E0E;
+  --megui-accent-soft: #F3E8E3;
+  --megui-on-accent: #FFFFFF;
+  --megui-ok: #15803D;
+  --megui-warn: #A16207;
+  --megui-bad: #D92D20;
+  --megui-info: #1565C0;
+  --text-body: var(--megui-ink);
+  --text-muted: var(--megui-ink-2);
+  --text-hint: var(--megui-ink-3);
+  --text-on-accent: var(--megui-on-accent);
+  --text-numeric: var(--megui-ink);
+  --surface-window: var(--megui-bg);
+  --surface-panel: var(--megui-surface);
+  --surface-strip: var(--megui-surface-2);
+  --surface-field: var(--megui-sunken);
+  --surface-row-alt: var(--megui-linha-alt);
+  --surface-readonly: var(--megui-somente-leitura);
+  --surface-selected: var(--megui-accent-soft);
+  --line-grid: var(--megui-border);
+  --line-control: var(--megui-border-2);
+  --line-focus: var(--megui-accent-linha);
+  --action-fill: var(--megui-accent);
+  --action-fill-hover: var(--megui-accent-hover);
+  --action-line: var(--megui-accent-linha);
+  --status-ok: var(--megui-ok);
+  --status-warn: var(--megui-warn);
+  --status-bad: var(--megui-bad);
+  --status-info: var(--megui-info);
+  --megui-elevacao-flutuante: 0 1px 0 0 #BAC5D0;
+  color-scheme: light;
+}
+
+[data-theme="escuro"], [data-tema="escuro"] {
+  --megui-bg: #0F1620;
+  --megui-surface: #18212C;
+  --megui-surface-2: #212C39;
+  --megui-sunken: #131C25;
+  --megui-linha-alt: #1C2632;
+  --megui-somente-leitura: #222C38;
+  --megui-ink: #E3E9EF;
+  --megui-ink-2: #94A4B5;
+  --megui-ink-3: #8796A9;
+  --megui-border: #2B3745;
+  --megui-border-2: #3A4857;
+  --megui-accent: #7D0E0E;
+  --megui-accent-hover: #9B1616;
+  --megui-accent-linha: #DC4A42;
+  --megui-accent-soft: #2E1A16;
+  --megui-on-accent: #FFFFFF;
+  --megui-ok: #4ADE80;
+  --megui-warn: #FBBF24;
+  --megui-bad: #FF8A8A;
+  --megui-info: #60A5FA;
+  --text-body: var(--megui-ink);
+  --text-muted: var(--megui-ink-2);
+  --text-hint: var(--megui-ink-3);
+  --text-on-accent: var(--megui-on-accent);
+  --text-numeric: var(--megui-ink);
+  --surface-window: var(--megui-bg);
+  --surface-panel: var(--megui-surface);
+  --surface-strip: var(--megui-surface-2);
+  --surface-field: var(--megui-sunken);
+  --surface-row-alt: var(--megui-linha-alt);
+  --surface-readonly: var(--megui-somente-leitura);
+  --surface-selected: var(--megui-accent-soft);
+  --line-grid: var(--megui-border);
+  --line-control: var(--megui-border-2);
+  --line-focus: var(--megui-accent-linha);
+  --action-fill: var(--megui-accent);
+  --action-fill-hover: var(--megui-accent-hover);
+  --action-line: var(--megui-accent-linha);
+  --status-ok: var(--megui-ok);
+  --status-warn: var(--megui-warn);
+  --status-bad: var(--megui-bad);
+  --status-info: var(--megui-info);
+  --megui-elevacao-flutuante: 0 1px 0 0 #3A4857;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]):not([data-tema]) {
+    --megui-bg: #0F1620;
+    --megui-surface: #18212C;
+    --megui-surface-2: #212C39;
+    --megui-sunken: #131C25;
+    --megui-linha-alt: #1C2632;
+    --megui-somente-leitura: #222C38;
+    --megui-ink: #E3E9EF;
+    --megui-ink-2: #94A4B5;
+    --megui-ink-3: #8796A9;
+    --megui-border: #2B3745;
+    --megui-border-2: #3A4857;
+    --megui-accent: #7D0E0E;
+    --megui-accent-hover: #9B1616;
+    --megui-accent-linha: #DC4A42;
+    --megui-accent-soft: #2E1A16;
+    --megui-on-accent: #FFFFFF;
+    --megui-ok: #4ADE80;
+    --megui-warn: #FBBF24;
+    --megui-bad: #FF8A8A;
+    --megui-info: #60A5FA;
+    --text-body: var(--megui-ink);
+    --text-muted: var(--megui-ink-2);
+    --text-hint: var(--megui-ink-3);
+    --text-on-accent: var(--megui-on-accent);
+    --text-numeric: var(--megui-ink);
+    --surface-window: var(--megui-bg);
+    --surface-panel: var(--megui-surface);
+    --surface-strip: var(--megui-surface-2);
+    --surface-field: var(--megui-sunken);
+    --surface-row-alt: var(--megui-linha-alt);
+    --surface-readonly: var(--megui-somente-leitura);
+    --surface-selected: var(--megui-accent-soft);
+    --line-grid: var(--megui-border);
+    --line-control: var(--megui-border-2);
+    --line-focus: var(--megui-accent-linha);
+    --action-fill: var(--megui-accent);
+    --action-fill-hover: var(--megui-accent-hover);
+    --action-line: var(--megui-accent-linha);
+    --status-ok: var(--megui-ok);
+    --status-warn: var(--megui-warn);
+    --status-bad: var(--megui-bad);
+    --status-info: var(--megui-info);
+    --megui-elevacao-flutuante: 0 1px 0 0 #3A4857;
+    color-scheme: dark;
+  }
+}
+
+:root {
+  --font-ui: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", sans-serif;
+  --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, monospace;
+  --megui-fonte-ui: var(--font-ui);
+  --megui-fonte-mono: var(--font-mono);
+  --megui-esp-meio: 2px;
+  --megui-esp-1: 4px;
+  --megui-esp-2: 8px;
+  --megui-esp-3: 12px;
+  --megui-esp-4: 16px;
+  --megui-esp-6: 24px;
+  --megui-esp-8: 32px;
+  --megui-esp-12: 48px;
+  --megui-linha: 1px;
+  --megui-marca: 2px;
+  --megui-raio: 4px;
+  --megui-normal-linha: 24px;
+  --megui-normal-controle: 28px;
+  --megui-compacta-linha: 20px;
+  --megui-compacta-controle: 24px;
+  --megui-peso-normal: 400;
+  --megui-peso-forte: 700;
+  --megui-tipo-dica: 11px;
+  --megui-tipo-dica-peso: 400;
+  --megui-tipo-dica-altura: 1.35;
+  --megui-tipo-corpo: 13px;
+  --megui-tipo-corpo-peso: 400;
+  --megui-tipo-corpo-altura: 1.45;
+  --megui-tipo-titulo: 17px;
+  --megui-tipo-titulo-peso: 700;
+  --megui-tipo-titulo-altura: 1.25;
+  --megui-tipo-destaque: 22px;
+  --megui-tipo-destaque-peso: 700;
+  --megui-tipo-destaque-altura: 1.2;
+  --megui-barra-titulo: 32px;
+  --megui-faixa-abas: 32px;
+  --megui-rodape: 24px;
+  --megui-aba-min: 120px;
+  --megui-aba-max: 220px;
+  --megui-aba-fechar: 16px;
+  --megui-painel-min: 280px;
+  --megui-painel-max: 360px;
+  --megui-acao-tamanho: 40px;
+  --megui-acao-margem: 16px;
+  --megui-acao-reserva: 64px;
+  --megui-faixa-nivel: 28px;
+  --megui-abas-planilha: 26px;
+  --megui-conteudo-max: 1440px;
+  --megui-virada: 900px;
+  --megui-toque-retrato: 44px;
+  --megui-mov-instantaneo: 0ms;
+  --megui-mov-feedback: 120ms;
+  --megui-mov-painel: 180ms;
+  --megui-mov-easing: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --megui-mov-feedback: 0ms; --megui-mov-painel: 0ms; }
+}

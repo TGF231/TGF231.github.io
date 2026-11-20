@@ -1,0 +1,411 @@
+/* MegUI — folha de componentes. Valores e fontes vêm dos tokens (tokens.css ou gerar/saida/megui.css);
+   aqui só apelidos, o reset e as classes .mg-*. É a mesma folha para React/TSX, HTML puro,
+   Django, Tauri, Vue e Svelte: os componentes React só aplicam estas classes. */
+:root {
+  --megui-fonte-ui: var(--font-ui);
+  --megui-fonte-mono: var(--font-mono);
+}
+[data-theme="claro"], [data-tema="claro"] { color-scheme: light; }
+[data-theme="escuro"], [data-tema="escuro"] { color-scheme: dark; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --megui-mov-feedback: 0ms;
+    --megui-mov-painel: 0ms;
+  }
+}
+
+/* Reset mínimo — densidade de ferramenta, não de página web. */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--surface-window);
+  color: var(--text-body);
+  font-family: var(--megui-fonte-ui);
+  font-size: var(--megui-tipo-corpo);
+  line-height: var(--megui-tipo-corpo-altura);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--action-fill); text-decoration: none; border-bottom: 1px solid var(--line-grid); }
+a:hover { color: var(--action-fill-hover); border-bottom-color: var(--action-line); }
+
+:focus-visible { outline: 1px solid var(--line-focus); outline-offset: 1px; }
+
+code, kbd, samp, .megui-mono, .mg-mono { font-family: var(--megui-fonte-mono); }
+
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: var(--surface-window); }
+::-webkit-scrollbar-thumb { background: var(--line-control); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-hint); }
+
+.mg-icone { flex: 0 0 auto; display: block; }
+.mg-espaco { flex: 1 1 auto; }
+
+/* ───────── Núcleo ───────── */
+
+/* Botao */
+.mg-botao {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--megui-esp-2);
+  min-height: var(--megui-normal-controle);
+  padding: 5px 13px;
+  /* secundário = só contorno; o preenchimento é da ação primária */
+  background: transparent; color: var(--text-muted);
+  border: 1px solid var(--line-control); border-radius: var(--megui-raio);
+  font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo); font-weight: var(--megui-peso-normal);
+  line-height: 1.2; cursor: pointer;
+  transition: background var(--megui-mov-feedback) var(--megui-mov-easing);
+}
+.mg-botao--compacta { min-height: var(--megui-compacta-controle); padding: 4px 10px; }
+.mg-botao:hover:not(:disabled) { background: var(--surface-strip); color: var(--text-body); }
+.mg-botao:active:not(:disabled) { background: var(--line-grid); }
+.mg-botao--acento { background: var(--action-fill); color: var(--text-on-accent); border-color: var(--action-fill); font-weight: var(--megui-peso-forte); }
+.mg-botao--acento:hover:not(:disabled) { background: var(--action-fill-hover); color: var(--text-on-accent); border-color: var(--action-fill-hover); }
+.mg-botao--acento:active:not(:disabled) { background: var(--action-fill-hover); }
+.mg-botao--perigo { background: transparent; color: var(--status-bad); border-color: var(--status-bad); }
+/* #FFFFFF literal herdado do kit: 2,27:1 sobre status-bad no escuro (sinalizado). */
+.mg-botao--perigo:hover:not(:disabled), .mg-botao--perigo:active:not(:disabled) { background: var(--status-bad); color: #FFFFFF; }
+.mg-botao:disabled { background: transparent; color: var(--text-hint); border-color: var(--line-grid); cursor: default; }
+.mg-botao--acento:disabled { background: var(--line-control); color: var(--surface-window); border-color: var(--line-control); }
+
+/* Rotulo */
+.mg-rotulo { margin: 0; font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo); color: var(--text-body); }
+.mg-rotulo--secao { font-weight: var(--megui-peso-forte); letter-spacing: 1px; font-size: var(--megui-tipo-dica); text-transform: uppercase; }
+.mg-rotulo--info { color: var(--text-muted); }
+.mg-rotulo--dica { color: var(--text-hint); font-size: var(--megui-tipo-dica); }
+.mg-rotulo--mono { color: var(--text-muted); font-family: var(--megui-fonte-mono); }
+.mg-rotulo--ok { color: var(--status-ok); font-weight: var(--megui-peso-forte); }
+.mg-rotulo--aviso { color: var(--status-warn); }
+.mg-rotulo--erro { color: var(--status-bad); font-weight: var(--megui-peso-forte); }
+.mg-rotulo--titulo { font-size: var(--megui-tipo-titulo); font-weight: var(--megui-peso-forte); line-height: var(--megui-tipo-titulo-altura); }
+.mg-rotulo--destaque { font-size: var(--megui-tipo-destaque); font-weight: var(--megui-peso-forte); line-height: var(--megui-tipo-destaque-altura); }
+
+/* Divisor — margem por --mg-margem (px) */
+.mg-divisor { flex: 0 0 auto; align-self: stretch; height: 1px; margin: var(--mg-margem, 0px) 0; background: var(--line-grid); }
+.mg-divisor--vertical { width: 1px; height: auto; min-height: var(--megui-esp-4); margin: 0 var(--mg-margem, 0px); }
+.mg-divisor--forte { background: var(--line-control); }
+
+/* BotaoJanela */
+.mg-botao-janela {
+  display: inline-flex; align-items: center; justify-content: center;
+  /* o fundo do hover é recuado e arredondado, como nos botões de ação */
+  width: var(--megui-esp-6); height: calc(var(--megui-barra-titulo) - 2 * var(--megui-esp-1)); padding: 0;
+  margin: 0 var(--megui-esp-meio);
+  border: none; border-radius: var(--megui-raio); background: transparent; color: var(--text-muted);
+  font-size: 11px; cursor: pointer;
+  transition: background var(--megui-mov-feedback) var(--megui-mov-easing);
+}
+.mg-botao-janela:hover { background: var(--line-grid); color: var(--text-body); }
+/* #FFFFFF literal herdado do kit: 2,27:1 sobre status-bad no escuro (sinalizado). */
+.mg-botao-janela--perigo:hover { background: var(--status-bad); color: #FFFFFF; }
+
+/* ───────── Formulários ───────── */
+
+/* Campo — preenchimento sem contorno em repouso; o contorno aparece no
+   hover e o de foco, no foco. Desabilitado é o inverso: só contorno fraco. */
+.mg-campo {
+  min-height: var(--megui-normal-controle); padding: 4px 7px;
+  background: var(--surface-strip); color: var(--text-body);
+  border: 1px solid transparent; border-radius: var(--megui-raio); outline: none;
+  font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo);
+}
+.mg-campo--compacta { min-height: var(--megui-compacta-controle); padding: 3px 5px; }
+.mg-campo--mono { font-family: var(--megui-fonte-mono); }
+.mg-campo:read-only, .mg-campo--somente-leitura { background: var(--surface-readonly); }
+.mg-campo:hover:not(:disabled) { border-color: var(--line-control); }
+.mg-campo:focus { border-color: var(--line-focus); }
+.mg-campo:disabled { background: transparent; color: var(--text-hint); border-color: var(--line-grid); }
+/* várias linhas: mantém o contorno, senão não se vê onde o campo começa */
+textarea.mg-campo { background: var(--surface-field); border-color: var(--line-control); }
+.mg-campo--invalido, .mg-campo[aria-invalid="true"] { border-color: var(--status-bad); }
+
+/* Selecao — o SVG de fundo não herda a tinta: há uma seta por tema, com o
+   megui-ink-3 de cada um gravado (#5B6974 no claro, #8796A9 no escuro). */
+:root, [data-theme="claro"], [data-tema="claro"] { --mg-seta: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235B6974' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); }
+[data-theme="escuro"], [data-tema="escuro"] { --mg-seta: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238796A9' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]):not([data-tema]) { --mg-seta: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238796A9' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); }
+}
+.mg-selecao {
+  min-height: var(--megui-normal-controle); padding: 4px 26px 4px 7px;
+  background: var(--surface-strip) var(--mg-seta) no-repeat right 6px center;
+  color: var(--text-body);
+  border: 1px solid transparent; border-radius: var(--megui-raio); outline: none;
+  appearance: none; -webkit-appearance: none;
+  font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo); cursor: pointer;
+}
+.mg-selecao--compacta { min-height: var(--megui-compacta-controle); padding: 3px 24px 3px 5px; }
+.mg-selecao:hover:not(:disabled) { border-color: var(--line-control); }
+.mg-selecao:focus { border-color: var(--line-focus); }
+.mg-selecao:disabled { background-color: transparent; color: var(--text-hint); border-color: var(--line-grid); cursor: default; }
+
+/* Caixa e Opcao — o input nativo fica por cima, invisível, e a marca é desenhada */
+.mg-caixa, .mg-opcao {
+  position: relative; display: inline-flex; align-items: center; gap: 7px;
+  color: var(--text-muted); font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo); cursor: pointer;
+}
+.mg-caixa > input, .mg-opcao > input { position: absolute; left: 0; opacity: 0; width: 14px; height: 14px; margin: 0; cursor: inherit; }
+.mg-caixa__marca, .mg-opcao__marca {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 14px; height: 14px; flex: 0 0 14px; border-radius: 3px;
+  background: var(--surface-panel); border: 1px solid var(--line-control); color: var(--text-on-accent);
+}
+.mg-opcao__marca { border-radius: 50%; }
+.mg-caixa__marca svg { display: none; }
+.mg-caixa:hover .mg-caixa__marca, .mg-opcao:hover .mg-opcao__marca { border-color: var(--line-focus); }
+.mg-caixa > input:focus-visible + .mg-caixa__marca, .mg-opcao > input:focus-visible + .mg-opcao__marca { outline: 1px solid var(--line-focus); outline-offset: 1px; }
+.mg-caixa > input:checked + .mg-caixa__marca { background: var(--action-fill); border-color: var(--action-fill); }
+.mg-caixa > input:checked + .mg-caixa__marca svg { display: block; }
+.mg-opcao > input:checked + .mg-opcao__marca { border-color: var(--action-fill); }
+.mg-opcao > input:checked + .mg-opcao__marca::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--action-fill); }
+.mg-caixa--desabilitada, .mg-opcao--desabilitada { color: var(--text-hint); cursor: default; }
+.mg-caixa > input:disabled + .mg-caixa__marca, .mg-opcao > input:disabled + .mg-opcao__marca { background: var(--surface-window); border-color: var(--line-grid); }
+.mg-opcao > input:disabled:checked + .mg-opcao__marca::after { background: var(--text-hint); }
+
+/* Grupo */
+.mg-grupo { position: relative; margin: 0; padding: var(--megui-esp-3); background: transparent; border: 1px solid var(--line-grid); border-radius: var(--megui-raio); min-width: 0; }
+.mg-grupo > legend { padding: 0 5px; margin-left: 4px; color: var(--text-muted); font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo); font-weight: var(--megui-peso-forte); }
+
+/* ───────── Dados ───────── */
+
+/* Tabela */
+.mg-tabela { border: 1px solid var(--line-control); border-radius: var(--megui-raio); overflow: hidden; background: var(--surface-panel); }
+.mg-tabela > table { width: 100%; border-collapse: collapse; font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo); }
+.mg-tabela th {
+  padding: 5px 6px; text-align: left; background: var(--surface-strip); color: var(--text-muted);
+  font-weight: var(--megui-peso-forte); border-right: 1px solid var(--line-grid); border-bottom: 1px solid var(--line-control); white-space: nowrap;
+}
+.mg-tabela td {
+  padding: 2px 4px; text-align: left; color: var(--text-body); font-weight: var(--megui-peso-normal);
+  border-right: 1px solid var(--line-grid); border-bottom: 1px solid var(--line-grid);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 0;
+}
+.mg-tabela--compacta th { padding: 3px 5px; }
+.mg-tabela--compacta td { padding: 1px 3px; }
+.mg-tabela tbody tr { background: var(--surface-panel); }
+.mg-tabela tbody tr:nth-child(even) { background: var(--surface-row-alt); }
+.mg-tabela tbody tr[aria-selected="true"] { background: var(--surface-selected); }
+.mg-tabela--selecionavel tbody tr { cursor: pointer; }
+.mg-tabela .mg-col--numerica { text-align: right; }
+.mg-tabela td.mg-col--numerica { font-family: var(--megui-fonte-mono); }
+.mg-tabela .mg-col--mono { font-family: var(--megui-fonte-mono); }
+.mg-tabela td.mg-col--somente-leitura { background: var(--surface-readonly); }
+.mg-tabela tr[aria-selected="true"] td.mg-col--somente-leitura { background: transparent; }
+.mg-tabela td.mg-celula--divergente { color: var(--status-bad); font-weight: var(--megui-peso-forte); }
+
+/* Lista — recuo por --mg-nivel */
+.mg-lista { background: var(--surface-field); border: 1px solid var(--line-control); border-radius: var(--megui-raio); overflow: hidden; font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo); }
+.mg-lista__item {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--megui-esp-3);
+  padding: var(--megui-esp-2) var(--megui-esp-3);
+  padding-left: calc(var(--megui-esp-3) + var(--mg-nivel, 0) * var(--megui-esp-4));
+  background: transparent; border-bottom: 1px solid var(--line-grid);
+}
+.mg-lista--selecionavel .mg-lista__item { cursor: pointer; }
+.mg-lista__item[aria-selected="true"] { background: var(--surface-selected); }
+.mg-lista__texto { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.mg-lista__rotulo { color: var(--text-body); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mg-lista__item[aria-selected="true"] .mg-lista__rotulo { font-weight: var(--megui-peso-forte); }
+.mg-lista__dica { color: var(--text-hint); font-size: var(--megui-tipo-dica); font-family: var(--megui-fonte-mono); }
+.mg-lista__valor { font-family: var(--megui-fonte-mono); color: var(--text-body); white-space: nowrap; }
+.mg-lista__valor--divergente { color: var(--status-bad); }
+
+/* FaixaNivel */
+.mg-faixa-nivel { background: var(--surface-field); border-bottom: 1px solid var(--line-control); }
+.mg-faixa-nivel__trilha {
+  display: flex; align-items: center; gap: var(--megui-esp-2); height: var(--megui-faixa-nivel); padding: 0 var(--megui-esp-2);
+  border-bottom: 1px solid var(--line-grid); font-family: var(--megui-fonte-mono); font-size: var(--megui-tipo-dica); color: var(--text-hint);
+}
+.mg-faixa-nivel__linha { display: flex; align-items: center; gap: var(--megui-esp-2); height: var(--megui-faixa-nivel); border-bottom: 1px solid var(--line-grid); }
+.mg-faixa-nivel__rotulo {
+  flex: 0 0 124px; align-self: stretch; display: flex; align-items: center; padding: 0 var(--megui-esp-2);
+  background: var(--surface-window); border-right: 1px solid var(--line-grid);
+  font-family: var(--megui-fonte-mono); font-size: var(--megui-tipo-dica); color: var(--text-hint); white-space: nowrap;
+}
+.mg-faixa-nivel__itens { display: flex; align-items: center; gap: 2px; overflow: hidden; }
+.mg-faixa-nivel__item {
+  display: flex; align-items: center; height: 22px; padding: 0 10px; border-radius: var(--megui-raio);
+  background: transparent; color: var(--text-muted); font-weight: var(--megui-peso-normal);
+  border: 1px solid transparent; font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo); white-space: nowrap; cursor: pointer;
+}
+.mg-faixa-nivel__item--ativo { background: var(--surface-selected); color: var(--text-body); font-weight: var(--megui-peso-forte); border-color: var(--action-line); }
+
+/* AbasPlanilha */
+.mg-abas-planilha {
+  height: var(--megui-abas-planilha); background: var(--surface-strip); border-top: 1px solid var(--line-control);
+  display: flex; align-items: stretch; gap: 2px; padding: 0 var(--megui-esp-2);
+}
+.mg-abas-planilha__rolagem { display: flex; align-items: center; gap: 4px; color: var(--text-hint); padding-right: 4px; border-right: 1px solid var(--line-grid); margin-right: 4px; }
+.mg-abas-planilha__aba {
+  display: flex; align-items: center; gap: 6px; padding: 0 var(--megui-esp-3);
+  background: var(--surface-field); color: var(--text-muted); font-weight: var(--megui-peso-normal);
+  border: 1px solid var(--line-grid); border-top: none; border-radius: 0 0 var(--megui-raio) var(--megui-raio);
+  font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo); white-space: nowrap; cursor: pointer;
+}
+.mg-abas-planilha__aba[aria-selected="true"] { background: var(--line-grid); color: var(--text-body); font-weight: var(--megui-peso-forte); }
+.mg-abas-planilha__aba:disabled { color: var(--text-hint); cursor: default; }
+.mg-abas-planilha__contagem { font-family: var(--megui-fonte-mono); font-size: var(--megui-tipo-dica); color: var(--text-hint); }
+
+/* ───────── Navegação ───────── */
+
+/* Janela — altura por --mg-altura */
+.mg-janela {
+  display: flex; flex-direction: column; height: var(--mg-altura, 520px);
+  background: var(--surface-window); border: 1px solid var(--line-control); border-radius: var(--megui-raio); overflow: hidden;
+  font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo);
+}
+.mg-janela--tela { height: 100vh; border: none; border-radius: 0; }
+.mg-janela__conteudo { position: relative; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; background: var(--surface-panel); }
+.mg-janela__rolavel { flex: 1 1 auto; min-height: 0; overflow: auto; }
+.mg-janela__rolavel--com-acao { padding-bottom: var(--megui-acao-reserva); }
+
+/* BarraTitulo */
+.mg-barra-titulo {
+  height: var(--megui-barra-titulo); display: flex; align-items: center; gap: var(--megui-esp-3); padding: 0 var(--megui-esp-2);
+  background: var(--surface-strip); border-bottom: 1px solid var(--line-grid); font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo);
+}
+/* com a faixa de abas ou a barra de ações logo abaixo, no mesmo fundo, o
+   cabeçalho é um bloco só: a divisória fica embaixo da faixa seguinte */
+.mg-barra-titulo:has(+ .mg-faixa-abas), .mg-barra-titulo:has(+ .mg-barra-acoes) { border-bottom-color: transparent; }
+/* contexto em segmentos: período, leiaute e afins como marca de fundo */
+.mg-barra-titulo__marca {
+  padding: var(--megui-esp-meio) var(--megui-esp-2); border-radius: var(--megui-raio);
+  background: var(--line-grid); color: var(--text-body); font-size: var(--megui-tipo-dica); white-space: nowrap;
+}
+.mg-barra-titulo__marca--aviso {
+  padding: 1px var(--megui-esp-2); background: transparent; color: var(--status-warn);
+  border: 1px solid var(--status-warn); font-weight: var(--megui-peso-forte);
+}
+.mg-barra-titulo__app { font-weight: var(--megui-peso-forte); color: var(--text-body); white-space: nowrap; }
+.mg-barra-titulo__contexto { color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mg-barra-titulo__informacao { font-family: var(--megui-fonte-mono); font-size: var(--megui-tipo-dica); color: var(--text-hint); white-space: nowrap; }
+.mg-barra-titulo__controles { display: flex; }
+
+/* BuscaModular */
+.mg-busca {
+  display: flex; align-items: center; gap: 4px; width: 180px; padding: 2px 6px;
+  background: var(--surface-panel); border: 1px solid transparent; border-radius: var(--megui-raio);
+}
+.mg-busca:hover { border-color: var(--line-control); }
+.mg-busca:focus-within { border-color: var(--line-focus); }
+.mg-busca > svg { flex: 0 0 14px; color: var(--text-hint); }
+.mg-busca > input {
+  flex: 1 1 auto; min-width: 0; border: none; outline: none; background: transparent; color: var(--text-body);
+  font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-dica);
+}
+
+/* FaixaAbas */
+.mg-faixa-abas {
+  height: var(--megui-faixa-abas); background: var(--surface-strip); border-bottom: 1px solid var(--line-grid);
+  display: flex; align-items: center; gap: 2px; padding: 0 var(--megui-esp-2);
+}
+/* aba = rótulo solto; a ativa é uma marca de fundo (line-grid + peso forte),
+   sem caixa nem linha de acento */
+.mg-aba {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--megui-esp-2);
+  min-width: var(--megui-aba-min); max-width: var(--megui-aba-max); padding: 4px 12px;
+  background: transparent; color: var(--text-muted); font-weight: var(--megui-peso-normal);
+  border: 1px solid transparent; border-radius: var(--megui-raio);
+  font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo); cursor: pointer;
+}
+.mg-aba:hover { color: var(--text-body); }
+.mg-aba:focus-visible { outline: none; border-color: var(--line-focus); }
+.mg-aba[aria-selected="true"] { background: var(--line-grid); color: var(--text-body); font-weight: var(--megui-peso-forte); }
+.mg-aba__rotulo { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mg-aba__fechar { flex: 0 0 var(--megui-aba-fechar); text-align: right; color: var(--text-hint); }
+.mg-faixa-abas__nova { display: flex; align-items: center; padding: 5px 8px; background: transparent; border: none; color: var(--text-hint); cursor: pointer; }
+
+/* ───────── Ações ───────── */
+
+/* BarraAcoes */
+.mg-barra-acoes { display: flex; align-items: center; gap: var(--megui-esp-2); padding: var(--megui-esp-3) var(--megui-esp-4); border-bottom: 1px solid var(--line-grid); flex-wrap: wrap; }
+.mg-barra-acoes__contagem { font-family: var(--megui-fonte-mono); font-size: var(--megui-tipo-dica); color: var(--text-hint); white-space: nowrap; }
+
+/* BotaoInterruptor */
+.mg-interruptor {
+  display: inline-flex; align-items: center; gap: var(--megui-esp-2);
+  min-height: var(--megui-normal-controle); padding: 5px 13px;
+  background: var(--surface-panel); color: var(--text-muted);
+  border: 1px solid var(--line-control); border-radius: var(--megui-raio);
+  font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo); font-weight: var(--megui-peso-normal); cursor: pointer;
+  transition: background var(--megui-mov-feedback) var(--megui-mov-easing);
+}
+.mg-interruptor--compacta { min-height: var(--megui-compacta-controle); padding: 4px 10px; }
+.mg-interruptor:hover { background: var(--surface-strip); color: var(--text-body); }
+.mg-interruptor[aria-pressed="true"] { background: var(--surface-selected); color: var(--text-body); border-color: var(--action-line); font-weight: var(--megui-peso-forte); }
+
+/* AcaoPrimaria — exige pai com position: relative (a .mg-janela__conteudo já é) */
+.mg-acao-primaria {
+  position: absolute; right: var(--megui-esp-4); bottom: var(--megui-esp-4);
+  display: flex; align-items: center; justify-content: flex-start; gap: var(--megui-esp-2);
+  min-height: var(--megui-acao-tamanho); padding: 10px var(--megui-esp-4);
+  background: var(--action-fill); color: var(--text-on-accent);
+  border: 1px solid var(--action-fill-hover); border-radius: var(--megui-raio);
+  font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo); font-weight: var(--megui-peso-forte); cursor: pointer;
+  transition: background var(--megui-mov-feedback) var(--megui-mov-easing);
+}
+.mg-acao-primaria:hover:not(:disabled) { background: var(--action-fill-hover); }
+.mg-acao-primaria:disabled { background: var(--line-control); color: var(--surface-window); border-color: var(--line-control); cursor: default; }
+.mg-acao-primaria--retrato { right: var(--megui-esp-3); bottom: var(--megui-esp-3); left: var(--megui-esp-3); justify-content: center; min-height: var(--megui-toque-retrato); padding: 12px var(--megui-esp-4); }
+
+/* Menu */
+.mg-menu { min-width: 180px; padding: var(--megui-esp-1); background: var(--surface-panel); border: 1px solid var(--line-control); border-radius: var(--megui-raio); font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo); }
+.mg-menu__separador { height: 1px; background: var(--line-grid); margin: var(--megui-esp-1) var(--megui-esp-2); }
+.mg-menu__item { display: flex; align-items: center; justify-content: space-between; gap: var(--megui-esp-4); padding: 6px 14px; border-radius: 3px; background: transparent; color: var(--text-body); cursor: pointer; }
+.mg-menu__item:hover:not([aria-disabled="true"]) { background: var(--surface-selected); }
+.mg-menu__item[aria-disabled="true"] { color: var(--text-hint); cursor: default; }
+.mg-menu__atalho { font-family: var(--megui-fonte-mono); font-size: var(--megui-tipo-dica); color: var(--text-hint); }
+
+/* ───────── Estado ───────── */
+
+/* Rodape */
+.mg-rodape {
+  height: var(--megui-rodape); display: flex; align-items: center; gap: var(--megui-esp-4); padding: 0 var(--megui-esp-2);
+  background: var(--surface-strip); border-top: 1px solid var(--line-grid);
+  font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-dica); color: var(--text-muted);
+}
+.mg-rodape__estado { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+.mg-rodape__ponto { width: 6px; height: 6px; flex: 0 0 6px; border-radius: var(--megui-raio); background: var(--text-hint); }
+.mg-rodape__ponto--ok { background: var(--status-ok); }
+.mg-rodape__ponto--aviso { background: var(--status-warn); }
+.mg-rodape__ponto--erro { background: var(--status-bad); }
+.mg-rodape__ponto--info { background: var(--status-info); }
+.mg-rodape__contagem { font-family: var(--megui-fonte-mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mg-rodape__versao { font-family: var(--megui-fonte-mono); color: var(--text-hint); }
+
+/* Progresso — valor por --mg-valor (0–100%) */
+.mg-progresso { display: flex; flex-direction: column; gap: var(--megui-esp-1); }
+.mg-progresso__rotulo { display: flex; justify-content: space-between; gap: var(--megui-esp-3); font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-dica); color: var(--text-muted); }
+.mg-progresso__pct { font-family: var(--megui-fonte-mono); }
+.mg-progresso__trilho { height: 14px; background: var(--surface-strip); border: 1px solid var(--line-grid); border-radius: var(--megui-raio); overflow: hidden; }
+.mg-progresso__barra { width: var(--mg-valor, 0%); height: 100%; background: var(--action-fill); transition: width var(--megui-mov-painel) var(--megui-mov-easing); }
+.mg-progresso--indeterminado .mg-progresso__barra { width: 35%; }
+
+/* Dica — aparece no hover e no foco, só com CSS */
+.mg-dica { position: relative; display: inline-flex; }
+.mg-dica__balao {
+  display: none; position: absolute; top: calc(100% + 4px); left: 0; z-index: 20; padding: 5px 7px;
+  background: var(--text-body); color: var(--surface-panel); font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-dica);
+  white-space: nowrap; pointer-events: none;
+}
+.mg-dica:hover > .mg-dica__balao, .mg-dica:focus-within > .mg-dica__balao { display: block; }
+
+/* Dialogo */
+.mg-dialogo { width: 420px; max-width: 100%; background: var(--surface-window); border: 1px solid var(--line-control); border-radius: var(--megui-raio); overflow: hidden; font-family: var(--megui-fonte-ui); font-size: var(--megui-tipo-corpo); }
+.mg-dialogo__barra { height: var(--megui-barra-titulo); display: flex; align-items: center; gap: var(--megui-esp-3); padding: 0 var(--megui-esp-2); background: var(--surface-strip); border-bottom: 1px solid var(--line-grid); }
+.mg-dialogo__titulo { font-weight: var(--megui-peso-forte); color: var(--text-body); }
+.mg-dialogo__fechar { width: var(--megui-esp-6); height: var(--megui-barra-titulo); border: none; background: transparent; color: var(--text-muted); cursor: pointer; }
+.mg-dialogo__corpo { padding: var(--megui-esp-4); color: var(--text-body); line-height: var(--megui-tipo-corpo-altura); }
+.mg-dialogo__acoes { display: flex; justify-content: flex-end; gap: var(--megui-esp-2); padding: var(--megui-esp-3) var(--megui-esp-4); border-top: 1px solid var(--line-grid); }
+
+/* Itens que podem ser link (<a>) no HTML puro e no Django — sem o sublinhado de link */
+a.mg-aba, a.mg-aba:hover, a.mg-faixa-abas__nova, a.mg-faixa-abas__nova:hover,
+a.mg-menu__item, a.mg-menu__item:hover, a.mg-faixa-nivel__item, a.mg-faixa-nivel__item:hover { border-bottom-width: 0; text-decoration: none; }
+a.mg-aba, a.mg-faixa-abas__nova, a.mg-faixa-abas__nova:hover { color: var(--text-muted); }
+a.mg-aba:hover { color: var(--text-body); }
+a.mg-aba[aria-selected="true"], a.mg-aba[aria-selected="true"]:hover, a.mg-menu__item, a.mg-menu__item:hover, a.mg-faixa-nivel__item--ativo:hover { color: var(--text-body); }
+a.mg-faixa-nivel__item:hover { color: var(--text-muted); }
+a.mg-faixa-nivel__item--ativo { border: 1px solid var(--action-line); }
+[data-href] { cursor: pointer; }

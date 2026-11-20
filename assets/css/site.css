@@ -1,0 +1,98 @@
+/* Página no MegUI. Só o encaixe da página: cores, medidas, tipos e durações vêm
+   todos dos tokens (assets/megui/megui.css). Nada de valor escrito à mão aqui. */
+
+/* A janela ocupa a tela; quem rola é o conteúdo, entre a barra de título e o rodapé. */
+.mg-janela--tela { height: 100vh; height: 100svh; }
+.mg-janela__rolavel { scroll-behavior: auto; }
+
+/* Link é texto sublinhado, não acento: o acento fica só na ação primária (lei 3),
+   e no escuro o vermelho do acento não tem contraste para texto. */
+a { color: var(--text-body); border-bottom-color: var(--line-control); }
+a:hover { color: var(--text-body); border-bottom-color: var(--line-focus); }
+
+.pular { position: absolute; left: var(--megui-esp-2); top: calc(-1 * var(--megui-barra-titulo) * 2); z-index: 20; }
+.pular:focus { top: var(--megui-esp-1); }
+
+/* Barra de título: nome da página, etapa atual, contador, menu e o Entrar no canto. */
+.mg-barra-titulo { position: relative; z-index: 5; }
+a.mg-barra-titulo__app, a.mg-barra-titulo__app:hover { color: var(--text-body); border-bottom: 0; }
+a.mg-botao, a.mg-botao:hover { border-bottom-width: var(--megui-linha); text-decoration: none; }
+.mg-botao { display: inline-flex; align-items: center; gap: var(--megui-esp-2); }
+.entrar { color: var(--text-muted); }
+
+.etapas-menu { position: relative; }
+.etapas-menu__lista { position: absolute; right: 0; top: calc(100% + var(--megui-esp-1)); z-index: 10; }
+a.mg-menu__item, a.mg-menu__item:hover { border-bottom: 0; color: var(--text-body); }
+
+/* Etapa: um bloco de tela cheia, como uma página dentro da página. */
+.etapa {
+  min-height: calc(100svh - var(--megui-barra-titulo) - var(--megui-rodape));
+  display: flex; flex-direction: column; justify-content: center;
+  padding: var(--megui-esp-12) var(--megui-esp-6);
+  border-bottom: var(--megui-linha) solid var(--line-grid);
+}
+.etapa:nth-child(even) { background: var(--surface-window); }
+.etapa--livre { justify-content: flex-start; min-height: 100%; }
+.etapa__corpo {
+  width: 100%; max-width: var(--megui-conteudo-max); margin: 0 auto;
+  display: flex; flex-direction: column; align-items: flex-start; gap: var(--megui-esp-4);
+}
+.etapa__marca { color: var(--text-hint); }
+.etapa__marca a { color: inherit; }
+.etapa__papel { color: var(--text-muted); }
+.etapa__texto { margin: 0; max-width: calc(var(--megui-painel-max) * 2); color: var(--text-muted); }
+.etapa__acoes { display: flex; flex-wrap: wrap; gap: var(--megui-esp-2); }
+
+/* Blocos: o índice das etapas e os programas da página de downloads. */
+.blocos {
+  align-self: stretch; display: grid; gap: var(--megui-esp-3); margin-top: var(--megui-esp-4);
+  grid-template-columns: repeat(auto-fill, minmax(var(--megui-painel-min), 1fr));
+}
+.bloco {
+  display: flex; flex-direction: column; gap: var(--megui-esp-3); min-width: 0;
+  padding: var(--megui-esp-4); background: var(--surface-panel); color: var(--text-body);
+  border: var(--megui-linha) solid var(--line-grid); border-radius: var(--megui-raio);
+  transition: background var(--megui-mov-feedback) var(--megui-mov-easing), border-color var(--megui-mov-feedback) var(--megui-mov-easing);
+}
+a.bloco, a.bloco:hover { color: var(--text-body); border-bottom: var(--megui-linha) solid var(--line-grid); }
+a.bloco:hover { background: var(--surface-strip); border-color: var(--line-control); }
+.bloco__num { color: var(--text-hint); font-size: var(--megui-tipo-dica); }
+.bloco__nome { margin: 0; font-size: var(--megui-tipo-titulo); font-weight: var(--megui-peso-forte); line-height: var(--megui-tipo-titulo-altura); }
+.bloco__texto { flex: 1 1 auto; color: var(--text-muted); }
+.bloco__pe {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--megui-esp-2);
+  margin-top: auto; padding-top: var(--megui-esp-2); border-top: var(--megui-linha) solid var(--line-grid);
+  color: var(--text-muted); font-weight: var(--megui-peso-forte);
+}
+
+/* Downloads: um botão por arquivo, com o tamanho alinhado à direita. */
+.blocos--downloads { grid-template-columns: repeat(auto-fill, minmax(var(--megui-painel-max), 1fr)); }
+.arquivos { display: flex; flex-direction: column; gap: var(--megui-esp-2); }
+.arquivo { justify-content: flex-start; }
+.arquivo__rotulo { flex: 1 1 auto; text-align: left; }
+.arquivo__tamanho { color: var(--text-hint); font-size: var(--megui-tipo-dica); }
+
+/* Sobre: linguagens como marcas de fundo, iguais às da barra de título. */
+.etiquetas { display: flex; flex-wrap: wrap; gap: var(--megui-esp-2); }
+.etiqueta {
+  padding: var(--megui-esp-meio) var(--megui-esp-2); border-radius: var(--megui-raio);
+  background: var(--line-grid); color: var(--text-body); font-size: var(--megui-tipo-dica);
+}
+
+/* Notas. */
+.lista-notas { list-style: none; margin: 0; padding: 0; align-self: stretch; }
+.lista-notas li {
+  display: flex; justify-content: space-between; gap: var(--megui-esp-4);
+  padding: var(--megui-esp-2) 0; border-bottom: var(--megui-linha) solid var(--line-grid);
+}
+.lista-notas .mg-mono { color: var(--text-hint); white-space: nowrap; }
+.prose { max-width: calc(var(--megui-painel-max) * 2); }
+.prose h2, .prose h3 { font-size: var(--megui-tipo-titulo); line-height: var(--megui-tipo-titulo-altura); margin: var(--megui-esp-6) 0 var(--megui-esp-2); }
+.prose pre { overflow: auto; padding: var(--megui-esp-3); background: var(--surface-field); border: var(--megui-linha) solid var(--line-grid); border-radius: var(--megui-raio); }
+
+/* Retrato (abaixo de --megui-virada ou mais alto que largo): o app.js liga a classe. */
+.retrato .mg-barra-titulo__contexto { display: none; }
+.retrato .etapa { padding: var(--megui-esp-8) var(--megui-esp-4); }
+.retrato .blocos, .retrato .blocos--downloads { grid-template-columns: 1fr; }
+.retrato .mg-botao { min-height: var(--megui-toque-retrato); }
+.retrato .mg-barra-titulo .mg-botao { min-height: 0; }

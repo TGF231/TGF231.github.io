@@ -7,10 +7,11 @@ o GitHub Actions publica o resultado no Pages.
 ## Estrutura
 
 ```
-site.config.json        toda a configuração (usuário, textos, filtros, privados)
-templates/base.html     o esqueleto HTML de todas as páginas
-assets/css/style.css    o visual inteiro — trocar tema = trocar as variáveis do :root
-assets/js/app.js        filtro da grade de repositórios
+site.config.json        toda a configuração (textos, ordem dos projetos, downloads, botão Entrar)
+templates/base.html     o esqueleto MegUI de todas as páginas: barra de título, conteúdo, rodapé
+assets/megui/           MegUI gerado pelo design system (tokens, componentes, fontes) — não editar à mão
+assets/css/site.css     só o encaixe da página (etapas, blocos, downloads), todo em tokens do MegUI
+assets/js/app.js        contador e nome da etapa, menu Etapas, "Próxima etapa" e modo retrato
 content/posts/*.md      notas (Markdown com front matter)
 static/                 arquivos copiados crus para a raiz do site (sw.js)
 scripts/build.mjs       o build: dados + templates -> dist/
@@ -19,6 +20,17 @@ scripts/markdown.mjs    renderizador Markdown mínimo
 data/repos.json         último snapshot dos repositórios (fallback se a API falhar)
 dist/                   saída do build (não versionada)
 ```
+
+## Páginas
+
+- **`/`**: uma etapa de tela cheia por projeto (ordem em `projetos.ordem`), mais Notas,
+  Sobre e Contato. A etapa 00 tem os blocos do índice; o bloco com `abrirDireto`
+  (o MeUsMe) abre o aplicativo em vez de ir à etapa.
+- **`/downloads/`**: um bloco por repositório de `downloads.repos` que tenha release
+  publicado, sempre o mais recente (rascunho e pré-lançamento ficam de fora). Os
+  nomes dos arquivos viram rótulos por `downloads.rotulos`; `downloads.ocultar` tira
+  somas, licenças e AAB. Repositório privado não entra: o arquivo exigiria login.
+- **Entrar** (canto superior direito): leva a `central.url`, o painel do NodeMCU.
 
 ## Como o site se atualiza sozinho
 

@@ -95,6 +95,28 @@ export async function fetchRepos(config) {
   return repos;
 }
 
+// Último release publicado (sem rascunho nem pré-lançamento) de cada repositório da
+// página de downloads. Repositório sem release, ou que o token não alcança, fica de fora.
+export async function fetchReleases(config) {
+  const out = [];
+  for (const name of config.downloads?.repos || []) {
+    const r = await api(`/repos/${config.user}/${name}/releases/latest`, { optional: true });
+    if (!r) {
+      console.warn(`aviso: "${name}" sem release publicado — fora da página de downloads.`);
+      continue;
+    }
+    out.push({
+      repo: name,
+      tag: r.tag_name,
+      nome: r.name || r.tag_name,
+      publicadoEm: r.published_at,
+      pagina: r.html_url,
+      arquivos: (r.assets || []).map((a) => ({ nome: a.name, tamanho: a.size, url: a.browser_download_url }))
+    });
+  }
+  return out;
+}
+
 export async function fetchProfileReadme(config) {
   if (!config.profileReadme?.enabled) return null;
   const repo = config.profileReadme.repo || config.user;
