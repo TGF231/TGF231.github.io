@@ -304,7 +304,6 @@ body.hub { min-height: 100vh; min-height: 100svh; display: flex; flex-direction:
 .cartao__nome { margin: 0; font: 700 clamp(19px, 1.9vw, 26px)/1.1 var(--fonte-titulo); letter-spacing: -0.03em; overflow-wrap: anywhere; }
 .cartao__texto {
   margin: 0; color: var(--texto-2); font-size: clamp(13px, 1.1vw, 15px); line-height: 1.5;
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
 }
 .cartao__pe { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; padding-top: 6px; }
 .cartao__acao { display: inline-flex; align-items: center; gap: 8px; font: 600 11px/1.2 var(--fonte); letter-spacing: 0.14em; text-transform: uppercase; color: var(--texto-2); }
@@ -316,11 +315,11 @@ body.hub { min-height: 100vh; min-height: 100svh; display: flex; flex-direction:
 .cartao--destaque { grid-column: span 2; grid-row: span 2; justify-content: flex-end; border-color: var(--borda-forte);
   background: linear-gradient(150deg, var(--cor-brilho), transparent 60%), var(--superficie); }
 .cartao--destaque .cartao__nome { font-size: clamp(30px, 3.6vw, 52px); letter-spacing: -0.05em; }
-.cartao--destaque .cartao__texto { -webkit-line-clamp: 4; font-size: clamp(14px, 1.2vw, 17px); }
+.cartao--destaque .cartao__texto { font-size: clamp(14px, 1.2vw, 17px); }
 .cartao--destaque .cartao__acao { color: var(--texto); }
 /* Contato: faixa fina embaixo, na largura toda, com texto e botões na mesma linha. */
 .cartao--contato { grid-column: 1 / -1; min-height: 0; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 8px 18px; padding-block: 14px; }
-.cartao--contato .cartao__texto { flex: 1 1 260px; -webkit-line-clamp: 1; }
+.cartao--contato .cartao__texto { flex: 1 1 260px; }
 .cartao__pe--botoes { margin-top: 0; padding-top: 0; justify-content: flex-start; }
 .cartao__pe--botoes .botao { min-height: 40px; padding: 0 16px; font-size: 14px; }
 
@@ -334,13 +333,9 @@ body.hub { min-height: 100vh; min-height: 100svh; display: flex; flex-direction:
   .hub main { align-items: flex-start; padding: 64px 12px 12px; }
   .hub__grade { gap: 10px; }
   .cartao { padding: 14px; gap: 4px; min-height: 104px; }
-  .cartao:not(.cartao--destaque):not(.cartao--contato) .cartao__texto { display: none; }
-  .cartao__links { display: none; }
   .cartao__nome { font-size: 19px; }
   .cartao--destaque { min-height: 0; }
   .cartao--destaque .cartao__nome { font-size: 30px; }
-  .cartao--destaque .cartao__texto { -webkit-line-clamp: 2; }
-  .cartao--contato .cartao__texto { display: none; }
   .cartao__pe--botoes .botao { min-height: 36px; padding: 0 12px; font-size: 13px; }
 }
 
