@@ -308,7 +308,8 @@ body.hub { min-height: 100vh; min-height: 100svh; display: flex; flex-direction:
 .cartao__pe { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; padding-top: 6px; }
 .cartao__acao { display: inline-flex; align-items: center; gap: 8px; font: 600 11px/1.2 var(--fonte); letter-spacing: 0.14em; text-transform: uppercase; color: var(--texto-2); }
 .cartao__links { position: relative; z-index: 2; display: inline-flex; flex-wrap: wrap; gap: 4px 12px; }
-.cartao__link { font-size: 13px; color: var(--texto-3); text-decoration: underline; text-decoration-color: var(--borda-forte); text-underline-offset: 3px; }
+/* Altura mínima de 24px: no celular, os links secundários ficam fáceis de tocar sem mudar o visual. */
+.cartao__link { display: inline-flex; align-items: center; min-height: 24px; font-size: 13px; color: var(--texto-3); text-decoration: underline; text-decoration-color: var(--borda-forte); text-underline-offset: 3px; }
 .cartao__link:hover { color: var(--texto); }
 
 /* Destaque: o primeiro projeto ocupa duas colunas e duas linhas, com o brilho da cor principal. */
