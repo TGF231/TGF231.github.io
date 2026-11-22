@@ -32,6 +32,7 @@
       },
       "Backup_Maximus": {
         "titulo": "Backup Maximus",
+        "descricao": "Programa de backup para Windows: junta bancos de dados, configurações, XMLs e logs de várias pastas num único arquivo .zip e espera o pen drive ser conectado para gravar. Tem agendamento, alerta quando o backup falha e configuração protegida por senha.",
         "documentacao": "https://tgf231.github.io/backup-maximus-docs/"
       },
       "Pen-Drive-Maker": {
