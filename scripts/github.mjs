@@ -55,16 +55,21 @@ function redact(repo, fields) {
   return out;
 }
 
-export async function fetchRepos(config) {
-  const user = config.user;
-  const exclude = new Set(config.repos.exclude || []);
+// Todos os repositórios públicos do usuário, do push mais recente para o mais antigo.
+async function listarRepos(user) {
   const all = [];
-
   for (let page = 1; page <= 5; page++) {
     const batch = await api(`/users/${user}/repos?per_page=100&sort=updated&page=${page}`);
     all.push(...batch);
     if (batch.length < 100) break;
   }
+  return all;
+}
+
+export async function fetchRepos(config) {
+  const user = config.user;
+  const exclude = new Set(config.repos.exclude || []);
+  const all = await listarRepos(user);
 
   let repos = all
     .filter((r) => !exclude.has(r.name))
@@ -95,16 +100,22 @@ export async function fetchRepos(config) {
   return repos;
 }
 
-// Último release publicado (sem rascunho nem pré-lançamento) de cada repositório da
-// página de downloads. Repositório sem release, ou que o token não alcança, fica de fora.
+// Último release publicado (sem rascunho nem pré-lançamento) de cada repositório
+// PÚBLICO do usuário. A lista é descoberta a cada build: repositório que acabou de
+// virar público, ou que publicou seu primeiro release, entra sozinho.
+//
+// Só repositório público entra: os arquivos de um release privado exigem
+// autenticação para baixar, então o link apareceria quebrado para o visitante.
 export async function fetchReleases(config) {
+  const excluir = new Set(config.downloads?.excluir || []);
+  const candidatos = (await listarRepos(config.user)).filter(
+    (r) => !r.private && !excluir.has(r.name) && (config.repos?.includeForks ? true : !r.fork)
+  );
+
   const out = [];
-  for (const name of config.downloads?.repos || []) {
+  for (const { name } of candidatos) {
     const r = await api(`/repos/${config.user}/${name}/releases/latest`, { optional: true });
-    if (!r) {
-      console.warn(`aviso: "${name}" sem release publicado — fora da página de downloads.`);
-      continue;
-    }
+    if (!r) continue; // sem release publicado: não é erro, só não tem o que baixar
     out.push({
       repo: name,
       tag: r.tag_name,

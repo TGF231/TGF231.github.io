@@ -45,8 +45,8 @@
     }
   },
   "downloads": {
-    "comment": "Página /downloads/: um bloco por projeto com release publicado, sempre o mais recente (lido no build, que roda todo dia). Repositório privado só entra quando houver um jeito público de baixar (ver 'privados').",
-    "repos": ["MeUsMe", "Backup_Maximus", "Eagle_conta_estoque"],
+    "comment": "Página /downloads/: um bloco por repositório PÚBLICO com release publicado, sempre o mais recente. A lista é descoberta sozinha a cada build (que roda todo dia), então repositório recém-aberto ou com primeiro release entra sem editar nada aqui. Repositório privado fica fora: seus arquivos exigem login para baixar. Use 'excluir' para esconder algum.",
+    "excluir": [],
     "rotulos": {
       "android.apk": "Android (APK)",
       "android-play.aab": "Android (Play Store, AAB)",

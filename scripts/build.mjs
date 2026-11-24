@@ -202,6 +202,8 @@ async function main() {
   } catch (err) {
     console.warn("Releases não carregados:", err.message);
   }
+  // Release cujos arquivos são todos de apoio (somas, licenças) não vira bloco.
+  releases = releases.filter((r) => arquivosDoRelease(r, config).length > 0);
 
   const posts = await readPosts();
   const projetos = ordenarProjetos(repos, config).map((r) => projeto(r, config, releases));
