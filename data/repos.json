@@ -35,18 +35,6 @@
       "hasPages": false,
       "pagesUrl": null,
       "visibility": "public"
-    },
-    {
-      "name": "Pen-Drive-Maker",
-      "description": "",
-      "language": "Python",
-      "topics": [],
-      "updatedAt": null,
-      "url": null,
-      "homepage": null,
-      "hasPages": false,
-      "pagesUrl": null,
-      "visibility": "private"
     }
   ]
 }
