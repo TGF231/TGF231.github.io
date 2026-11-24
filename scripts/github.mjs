@@ -1,5 +1,19 @@
 // Coleta de dados do GitHub. Sem dependências: usa fetch nativo do Node 20+.
+//
+// Tudo que o site mostra vem daqui — nada de listas de projetos escritas à mão.
+// O que manda é a própria página do repositório no GitHub:
+//
+//   topic "site"      o repositório vira um bloco de projeto (sem ele, fica fora)
+//   topic "destaque"  sobe para o começo da página
+//   description       o texto do bloco
+//   homepage          endereço do aplicativo (quando não for a própria Page)
+//
+// Assim, renomear um repositório, abrir um que era privado ou publicar um
+// release novo aparece no site sozinho, no build seguinte.
 const API = "https://api.github.com";
+
+export const TOPIC_SITE = "site";
+export const TOPIC_DESTAQUE = "destaque";
 
 function headers() {
   const token = process.env.GH_PAT || process.env.GITHUB_TOKEN;
@@ -23,38 +37,6 @@ async function api(path, { optional = false } = {}) {
   return res.json();
 }
 
-function pagesUrl(repo, user) {
-  if (!repo.has_pages) return null;
-  return `https://${user.toLowerCase()}.github.io/${repo.name}/`;
-}
-
-function normalize(repo, user, { visibility }) {
-  return {
-    name: repo.name,
-    description: repo.description || "",
-    language: repo.language || null,
-    topics: repo.topics || [],
-    stars: repo.stargazers_count ?? 0,
-    forks: repo.forks_count ?? 0,
-    isFork: Boolean(repo.fork),
-    archived: Boolean(repo.archived),
-    updatedAt: repo.pushed_at || repo.updated_at,
-    createdAt: repo.created_at,
-    url: visibility === "private" ? null : repo.html_url,
-    homepage: repo.homepage || null,
-    hasPages: Boolean(repo.has_pages),
-    pagesUrl: pagesUrl(repo, user),
-    visibility
-  };
-}
-
-// Mantém apenas os campos que o site.config.json autoriza expor para privados.
-function redact(repo, fields) {
-  const out = { name: repo.name, visibility: "private", hasPages: repo.hasPages, topics: [] };
-  for (const f of fields) if (repo[f] !== undefined) out[f] = repo[f];
-  return out;
-}
-
 // Todos os repositórios públicos do usuário, do push mais recente para o mais antigo.
 async function listarRepos(user) {
   const all = [];
@@ -66,56 +48,71 @@ async function listarRepos(user) {
   return all;
 }
 
+function pagesUrl(repo, user) {
+  if (!repo.has_pages) return null;
+  return `https://${user.toLowerCase()}.github.io/${repo.name}/`;
+}
+
+// Documentação por convenção: o repositório "<nome>-docs" com Page publicada.
+// Evita guardar o endereço da documentação em arquivo, que envelhece.
+function docsUrl(repo, todos, user) {
+  const alvo = `${repo.name.toLowerCase().replace(/_/g, "-")}-docs`;
+  const docs = todos.find((d) => d.name.toLowerCase() === alvo && d.has_pages);
+  return docs ? pagesUrl(docs, user) : null;
+}
+
+function normalize(repo, todos, user) {
+  const pages = pagesUrl(repo, user);
+  return {
+    name: repo.name,
+    description: repo.description || "",
+    language: repo.language || null,
+    topics: repo.topics || [],
+    destaque: (repo.topics || []).includes(TOPIC_DESTAQUE),
+    stars: repo.stargazers_count ?? 0,
+    archived: Boolean(repo.archived),
+    updatedAt: repo.pushed_at || repo.updated_at,
+    url: repo.html_url,
+    // homepage apontando para fora da Page significa "este é o aplicativo".
+    homepage: repo.homepage || null,
+    hasPages: Boolean(repo.has_pages),
+    pagesUrl: pages,
+    docsUrl: docsUrl(repo, todos, user)
+  };
+}
+
+// Os repositórios que viram projeto: públicos, com o topic "site".
+// Em destaque primeiro; dentro de cada grupo, o de push mais recente lidera.
 export async function fetchRepos(config) {
   const user = config.user;
-  const exclude = new Set(config.repos.exclude || []);
-  const all = await listarRepos(user);
+  const todos = await listarRepos(user);
 
-  let repos = all
-    .filter((r) => !exclude.has(r.name))
-    .filter((r) => (config.repos.includeForks ? true : !r.fork))
-    .filter((r) => (config.repos.includeArchived ? true : !r.archived))
-    .map((r) => normalize(r, user, { visibility: "public" }));
+  const repos = todos
+    .filter((r) => (r.topics || []).includes(TOPIC_SITE))
+    .filter((r) => (config.repos?.includeForks ? true : !r.fork))
+    .filter((r) => (config.repos?.includeArchived ? true : !r.archived))
+    .map((r) => normalize(r, todos, user))
+    .sort(
+      (a, b) =>
+        Number(b.destaque) - Number(a.destaque) ||
+        new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0)
+    );
 
-  // Privados: só os explicitamente autorizados, e só com token disponível.
-  const allow = config.private?.allow || [];
-  const privateRepos = [];
-  if (allow.length && hasToken()) {
-    for (const name of allow) {
-      if (exclude.has(name)) continue;
-      const raw = await api(`/repos/${user}/${name}`, { optional: true });
-      if (!raw) {
-        console.warn(`aviso: repositório privado "${name}" não acessível com o token atual — ignorado.`);
-        continue;
-      }
-      privateRepos.push(redact(normalize(raw, user, { visibility: "private" }), config.private.fields || []));
-    }
-  } else if (allow.length) {
-    console.warn("aviso: sem GH_PAT/GITHUB_TOKEN — repositórios privados não foram consultados.");
+  if (!repos.length) {
+    console.warn(
+      `aviso: nenhum repositório público com o topic "${TOPIC_SITE}" — a página de projetos sai vazia.`
+    );
   }
-
-  const seen = new Set(repos.map((r) => r.name));
-  repos = [...repos, ...privateRepos.filter((r) => !seen.has(r.name))];
-  repos.sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
   return repos;
 }
 
-// Último release publicado (sem rascunho nem pré-lançamento) de cada repositório
-// PÚBLICO do usuário. A lista é descoberta a cada build: repositório que acabou de
-// virar público, ou que publicou seu primeiro release, entra sozinho.
-//
-// Só repositório público entra: os arquivos de um release privado exigem
-// autenticação para baixar, então o link apareceria quebrado para o visitante.
-export async function fetchReleases(config) {
-  const excluir = new Set(config.downloads?.excluir || []);
-  const candidatos = (await listarRepos(config.user)).filter(
-    (r) => !r.private && !excluir.has(r.name) && (config.repos?.includeForks ? true : !r.fork)
-  );
-
+// Último release publicado (sem rascunho nem pré-lançamento) de cada projeto.
+// Recebe a lista já filtrada: downloads e projetos seguem a mesma regra.
+export async function fetchReleases(repos, config) {
   const out = [];
-  for (const { name } of candidatos) {
+  for (const { name } of repos) {
     const r = await api(`/repos/${config.user}/${name}/releases/latest`, { optional: true });
-    if (!r) continue; // sem release publicado: não é erro, só não tem o que baixar
+    if (!r) continue; // sem release publicado: não é erro, só não há o que baixar
     out.push({
       repo: name,
       tag: r.tag_name,

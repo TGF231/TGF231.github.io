@@ -1,86 +1,76 @@
 {
-  "generatedAt": "2026-11-24T19:23:59.974Z",
+  "generatedAt": "2026-11-24T20:21:53.303Z",
   "user": "TGF231",
   "repos": [
     {
       "name": "Backup_Maximus",
-      "description": "",
+      "description": "Programa de backup para Windows: junta bancos de dados, configurações, XMLs e logs de várias pastas num único arquivo .zip e espera o pen drive ser conectado para gravar. Tem agendamento, alerta quando o backup falha e configuração protegida por senha.",
       "language": "Python",
-      "topics": [],
+      "topics": [
+        "destaque",
+        "site"
+      ],
+      "destaque": true,
       "stars": 0,
-      "forks": 0,
-      "isFork": false,
       "archived": false,
       "updatedAt": "2026-11-24T18:46:29Z",
-      "createdAt": "2026-09-02T16:29:54Z",
       "url": "https://github.com/TGF231/Backup_Maximus",
       "homepage": null,
       "hasPages": false,
       "pagesUrl": null,
-      "visibility": "public"
-    },
-    {
-      "name": "YT-Meg-Downloader",
-      "description": "",
-      "language": "Python",
-      "topics": [],
-      "stars": 0,
-      "forks": 0,
-      "isFork": false,
-      "archived": false,
-      "updatedAt": "2026-11-24T17:11:54Z",
-      "createdAt": "2026-09-29T14:44:47Z",
-      "url": "https://github.com/TGF231/YT-Meg-Downloader",
-      "homepage": null,
-      "hasPages": false,
-      "pagesUrl": null,
-      "visibility": "public"
+      "docsUrl": "https://tgf231.github.io/backup-maximus-docs/"
     },
     {
       "name": "MeUsMe",
-      "description": "",
+      "description": "Programa de organização de tarefas: captura rápida, um passo por vez, agenda e finanças no mesmo lugar. Funciona no navegador, no celular e no Windows, com os dados guardados no próprio aparelho.",
       "language": "TypeScript",
-      "topics": [],
+      "topics": [
+        "destaque",
+        "site"
+      ],
+      "destaque": true,
       "stars": 0,
-      "forks": 0,
-      "isFork": false,
       "archived": false,
       "updatedAt": "2026-11-23T01:22:04Z",
-      "createdAt": "2026-10-07T22:18:26Z",
       "url": "https://github.com/TGF231/MeUsMe",
       "homepage": "https://megstation.com/MeUsMe/",
       "hasPages": true,
       "pagesUrl": "https://tgf231.github.io/MeUsMe/",
-      "visibility": "public"
+      "docsUrl": null
     },
     {
       "name": "SPED_TABLES",
       "description": "",
       "language": "Python",
-      "topics": [],
+      "topics": [
+        "site"
+      ],
+      "destaque": false,
       "stars": 0,
-      "forks": 0,
-      "isFork": false,
       "archived": false,
       "updatedAt": "2026-11-10T13:47:15Z",
-      "createdAt": "2026-07-06T16:41:52Z",
       "url": "https://github.com/TGF231/SPED_TABLES",
       "homepage": null,
       "hasPages": false,
       "pagesUrl": null,
-      "visibility": "public"
+      "docsUrl": null
     },
     {
-      "name": "Pen-Drive-Maker",
-      "description": "",
+      "name": "Eagle_conta_estoque",
+      "description": "Contagem de Estoque para o Eagle Gestão",
       "language": "Python",
-      "topics": [],
-      "updatedAt": null,
-      "url": null,
+      "topics": [
+        "site"
+      ],
+      "destaque": false,
+      "stars": 0,
+      "archived": false,
+      "updatedAt": "2026-09-30T13:04:09Z",
+      "url": "https://github.com/TGF231/Eagle_conta_estoque",
       "homepage": null,
       "hasPages": false,
       "pagesUrl": null,
-      "visibility": "private"
+      "docsUrl": null
     }
   ]
 }

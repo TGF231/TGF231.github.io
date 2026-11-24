@@ -79,28 +79,27 @@ function tamanho(bytes) {
   return `${Math.max(1, Math.round(bytes / 1024)).toLocaleString("pt-BR")} KB`;
 }
 
-// Projetos na ordem do site.config.json; os que não estão na lista vêm depois, pelo último push.
-function ordenarProjetos(repos, config) {
-  const ordem = config.projetos?.ordem || [];
-  const pos = (r) => (ordem.includes(r.name) ? ordem.indexOf(r.name) : ordem.length);
-  return [...repos].sort((a, b) => pos(a) - pos(b) || new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
-}
-
-// O que vem do GitHub, com os textos do site.config.json por cima.
-function projeto(repo, config, releases) {
-  const t = config.projetos?.textos?.[repo.name] || {};
+// Um bloco de projeto, montado só com o que o GitHub informa sobre o repositório.
+// Nada aqui vem de lista escrita à mão: renomear o repositório, trocar a descrição
+// ou publicar um release novo aparece no site no build seguinte.
+//
+// homepage preenchida significa "este repositório tem um aplicativo": o bloco do
+// índice leva direto a ele. Só com Page publicada, o link é tratado como página.
+function projeto(repo, releases) {
+  const app = repo.homepage || repo.pagesUrl || null;
+  const ehAplicativo = Boolean(repo.homepage);
   return {
     id: repo.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
     repo: repo.name,
-    titulo: t.titulo || repo.name.replace(/_/g, " "),
-    descricao: t.descricao || repo.description || "",
+    titulo: repo.name.replace(/[_-]+/g, " ").trim(),
+    descricao: repo.description || "",
     linguagem: repo.language,
     atualizado: repo.updatedAt,
-    app: t.app || repo.pagesUrl || repo.homepage || null,
-    rotuloApp: t.abrir || "Abrir página",
-    abrirDireto: Boolean(t.abrirDireto && (t.app || repo.pagesUrl || repo.homepage)),
+    app,
+    rotuloApp: ehAplicativo ? "Abrir aplicativo" : "Abrir página",
+    abrirDireto: ehAplicativo,
     codigo: repo.url,
-    documentacao: t.documentacao || null,
+    documentacao: repo.docsUrl,
     release: releases.find((r) => r.repo === repo.name) || null
   };
 }
@@ -180,14 +179,6 @@ async function main() {
     }
   }
 
-  // Projetos manuais (privados, sem a API): entram com o que o site.config.json diz,
-  // sem link de código nem release.
-  const exclui = new Set(config.repos?.exclude || []);
-  for (const m of config.projetos?.manuais || []) {
-    if (exclui.has(m.name) || repos.some((r) => r.name === m.name)) continue;
-    repos.push({ name: m.name, description: "", language: m.language || null, topics: [], updatedAt: null, url: null, homepage: m.homepage || null, hasPages: false, pagesUrl: null, visibility: "private" });
-  }
-
   let readmeHtml = "";
   try {
     const md = await fetchProfileReadme(config);
@@ -198,7 +189,7 @@ async function main() {
 
   let releases = [];
   try {
-    releases = await fetchReleases(config);
+    releases = await fetchReleases(repos, config);
   } catch (err) {
     console.warn("Releases não carregados:", err.message);
   }
@@ -206,7 +197,7 @@ async function main() {
   releases = releases.filter((r) => arquivosDoRelease(r, config).length > 0);
 
   const posts = await readPosts();
-  const projetos = ordenarProjetos(repos, config).map((r) => projeto(r, config, releases));
+  const projetos = repos.map((r) => projeto(r, releases));
   const hoje = fmtDate(new Date().toISOString(), config.lang);
   const central = config.central || {};
 
@@ -312,7 +303,7 @@ async function main() {
       const arquivos = arquivosDoRelease(r, config);
       return `<section class="bloco bloco--download" id="${id}" aria-labelledby="${id}-titulo">
       <span class="bloco__num mono">${dois(i + 1)}</span>
-      <h2 class="bloco__nome" id="${id}-titulo">${esc(p?.titulo || config.projetos?.textos?.[r.repo]?.titulo || r.repo)}</h2>
+      <h2 class="bloco__nome" id="${id}-titulo">${esc(p?.titulo || r.repo.replace(/[_-]+/g, " "))}</h2>
       <span class="meta">Versão <span class="mono">${esc(r.tag)}</span> · publicada em ${esc(fmtDate(r.publicadoEm, config.lang))}</span>
       <div class="arquivos">
         ${p?.app ? `<a class="botao arquivo" href="${esc(p.app)}">${icone("abrir")}<span class="arquivo__rotulo">Navegador (versão web)</span><span class="arquivo__tamanho mono">web</span></a>` : ""}
